@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm & Flowchart Presentation - EEE 103</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const ChevronLeft = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        );
+
+        const ChevronRight = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        );
+
+        const Eye = () => (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        );
+
+        const EyeOff = () => (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+        );
+
+        const FlowchartPresentation = () => {
+            const [currentSlide, setCurrentSlide] = useState(0);
+            const [revealedSteps, setRevealedSteps] = useState({});
+
+            const slides = [
+                {
+                    type: 'title',
+                    content: {
+                        courseCode: 'EEE: 103',
+                        courseTitle: 'Computer Programming',
+                        topic: 'L1: Algorithm & Flowchart',
+                        faculty: 'Sk Tahmed Salim Rafid'
+                    }
+                },
+                {
+                    type: 'concept',
+                    title: 'What is a Variable?',
+                    content: [
+                        'A variable is a storage container in memory to hold data',
+                        'Humans store information in their brain/memory',
+                        'Similarly, programs need variables to store data',
+                        'Example: To calculate area of rectangle - length, width (inputs), area (result)',
+                        'Variables are named storage locations in memory',
+                        'For storing input/output use variables'
+                    ]
+                },
+                {
+                    type: 'concept',
+                    title: 'What is an Algorithm?',
+                    content: [
+                        'An algorithm is a step-by-step procedure to solve a problem',
+                        'Characteristics: Definite, Finite, Input, Output, Effective',
+                        'Think of it like a recipe - clear instructions to achieve a goal',
+                        'Written in simple, human-readable language',
+                        'Independent of any programming language',
+                        'Each step is numbered for clarity'
+                    ]
+                },
+                {
+                    type: 'concept',
+                    title: 'What is a Flowchart?',
+                    content: [
+                        'A flowchart is a pictorial/graphical representation of an algorithm',
+                        'Uses standard symbols to represent different operations',
+                        'Shows the flow of control from one step to another',
+                        'Makes the logic easier to understand and communicate',
+                        'Proper spacing and straight arrows are important',
+                        'Algorithm = Written Steps | Flowchart = Visual Diagram'
+                    ]
+                },
+                {
+                    type: 'symbols',
+                    title: 'Flowchart Symbols',
+                    symbols: [
+                        { shape: 'oval', name: 'Oval (Terminal)', use: 'Start and End of flowchart' },
+                        { shape: 'parallelogram', name: 'Parallelogram (I/O)', use: 'Input and Output operations' },
+                        { shape: 'rectangle', name: 'Rectangle (Process)', use: 'Process / Computation' },
+                        { shape: 'diamond', name: 'Diamond (Decision)', use: 'Decision (Yes/No condition)' },
+                        { shape: 'arrow', name: 'Arrow', use: 'Flow direction of logic' },
+                        { shape: 'circle', name: 'Circle (Connector)', use: 'Connect multiple paths' },
+                        { shape: 'offpage', name: 'Off-Page Connector', use: 'Connect flowchart on different pages' }
+                    ]
+                },
+                {
+                    type: 'example',
+                    title: 'Example 1: Area of Rectangle',
+                    algorithm: [
+                        'Start',
+                        'Declare variables: L, W, A',
+                        'Input L, W',
+                        'Compute A = L × W',
+                        'Print A',
+                        'Stop'
+                    ],
+                    flowchartSteps: [
+                        { type: 'start', text: 'Start' },
+                        { type: 'input', text: 'Input L, W' },
+                        { type: 'process', text: 'A = L × W' },
+                        { type: 'output', text: 'Print A' },
+                        { type: 'stop', text: 'Stop' }
+                    ]
+                },
+                {
+                    type: 'example',
+                    title: 'Example 2: Convert Feet to Centimeters',
+                    algorithm: [
+                        'Start',
+                        'Declare variables: F, C',
+                        'Input F',
+                        'Compute C = F × 30.48',
+                        'Print C',
+                        'Stop'
+                    ],
+                    flowchartSteps: [
+                        { type: 'start', text: 'Start' },
+                        { type: 'input', text: 'Input F' },
+                        { type: 'process', text: 'C = F × 30.48' },
+                        { type: 'output', text: 'Print C' },
+                        { type: 'stop', text: 'Stop' }
+                    ]
+                },
+                {
+                    type: 'example',
+                    title: 'Example 3: Area of Circle',
+                    algorithm: [
+                        'Start',
+                        'Declare variables: R, A',
+                        'Input R',
+                        'Compute A = 3.1416 × R × R',
+                        'Print A',
+                        'Stop'
+                    ],
+                    flowchartSteps: [
+                        { type: 'start', text: 'Start' },
+                        { type: 'input', text: 'Input R' },
+                        { type: 'process', text: 'A = 3.1416 × R × R' },
+                        { type: 'output', text: 'Print A' },
+                        { type: 'stop', text: 'Stop' }
+                    ]
+                },
+                {
+                    type: 'example',
+                    title: 'Example 4: Largest of Two Numbers',
+                    algorithm: [
+                        'Start',
+                        'Declare variables: A, B',
+                        'Input A, B',
+                        'If A > B go to Step 5 else go to Step 6',
+                        'Print "Largest = A", go to Step 7',
+                        'Print "Largest = B"',
+                        'Stop'
+                    ],
+                    flowchartSteps: [
+                        { type: 'start', text: 'Start' },
+                        { type: 'input', text: 'Input A, B' },
+                        { type: 'decision', text: 'A > B?' },
+                        { type: 'output', text: 'Print "Largest = A"' },
+                        { type: 'output', text: 'Print "Largest = B"' },
+                        { type: 'stop', text: 'Stop' }
+                    ]
+                },
+                {
+                    type: 'example',
+                    title: 'Example 5: Positive or Negative',
+                    algorithm: [
+                        'Start',
+                        'Declare variable: N',
+                        'Input N',
+                        'If N > 0 go to Step 5 else go to Step 6',
+                        'Print "Positive", go to Step 7',
+                        'Print "Negative"',
+                        'Stop'
+                    ],
+                    flowchartSteps: [
+                        { type: 'start', text: 'Start' },
+                        { type: 'input', text: 'Input N' },
+                        { type: 'decision', text: 'N > 0?' },
+                        { type: 'output', text: 'Print "Positive"' },
+                        { type: 'output', text: 'Print "Negative"' },
+                        { type: 'stop', text: 'Stop' }
+                    ]
+                },
+                {
+                    type: 'example',
+                    title: 'Example 6: Odd or Even',
+                    algorithm: [
+                        'Start',
+                        'Declare variable: N',
+                        'Input N',
+                        'If N mod 2 = 0 go to Step 5 else go to Step 6',
+                        'Print "Even", go to Step 7',
+                        'Print "Odd"',
+                        'Stop'
+                    ],
+                    flowchartSteps: [
+                        { type: 'start', text: 'Start' },
+                        { type: 'input', text: 'Input N' },
+                        { type: 'decision', text: 'N mod 2 = 0?' },
+                        { type: 'output', text: 'Print "Even"' },
+                        { type: 'output', text: 'Print "Odd"' },
+                        { type: 'stop', text: 'Stop' }
+                    ]
+                },
+                {
+                    type: 'example',
+                    title: 'Example 7: Average of Three Quiz Marks',
+                    algorithm: [
+                        'Start',
+                        'Declare variables: Q1, Q2, Q3, AVG',
+                        'Input Q1, Q2, Q3',
+                        'Compute AVG = (Q1+Q2+Q3)/3',
+                        'Print AVG',
+                        'If AVG < 10 go to Step 7 else go to Step 8',
+                        'Print "Needs Improvement", go to Step 9',
+                        'Print "Good Work"',
+                        'Stop'
+                    ],
+                    hideFlowchart: true,
+                    flowchartSteps: [
+                        { type: 'start', text: 'Start' },
+                        { type: 'input', text: 'Input Q1, Q2, Q3' },
+                        { type: 'process', text: 'AVG = (Q1+Q2+Q3)/3' },
+                        
+                        { type: 'decision', text: 'AVG < 10?' },
+                        { type: 'output', text: 'Print "Needs Improvement"' },
+                        { type: 'output', text: 'Print "Good Work"' },
+                        { type: 'stop', text: 'Stop' }
+                    ]
+                },
+                {
+                    type: 'thankyou'
+                }
+            ];
+
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === 'b' || e.key === 'B') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        let totalSteps = 0;
+                        
+                        if (slide.type === 'concept') totalSteps = slide.content.length;
+                        else if (slide.type === 'symbols') totalSteps = slide.symbols.length;
+                        else if (slide.type === 'example') totalSteps = slide.algorithm.length + slide.flowchartSteps.length;
+                        
+                        const newRevealed = { ...revealedSteps };
+                        for (let i = 0; i < totalSteps; i++) {
+                            newRevealed[`${currentSlide}-${i}`] = true;
+                        }
+                        setRevealedSteps(newRevealed);
+                    } else if (e.key === 'Tab') {
+                        e.preventDefault();
+                        if (currentSlide < slides.length - 1) {
+                            setCurrentSlide(prev => prev + 1);
+                            setRevealedSteps({});
+                        }
+                    } else if (e.key === 'ArrowRight') {
+                        setCurrentSlide(prev => Math.min(slides.length - 1, prev + 1));
+                        setRevealedSteps({});
+                    } else if (e.key === 'ArrowLeft') {
+                        setCurrentSlide(prev => Math.max(0, prev - 1));
+                        setRevealedSteps({});
+                    } else if (e.key === 'ArrowDown' || e.key === ' ') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        
+                        if (slide.type === 'title') {
+                            if (currentSlide < slides.length - 1) {
+                                setCurrentSlide(prev => prev + 1);
+                                setRevealedSteps({});
+                            }
+                            return;
+                        }
+                        
+                        if (slide.type === 'example') {
+                            const algoLength = slide.algorithm.length;
+                            const flowLength = slide.flowchartSteps.length;
+                            const totalSteps = algoLength + flowLength;
+                            
+                            let allRevealed = true;
+                            for (let i = 0; i < totalSteps; i++) {
+                                if (!revealedSteps[`${currentSlide}-${i}`]) {
+                                    allRevealed = false;
+                                    break;
+                                }
+                            }
+                            
+                            if (allRevealed && totalSteps > 0) {
+                                if (currentSlide < slides.length - 1) {
+                                    setCurrentSlide(prev => prev + 1);
+                                    setRevealedSteps({});
+                                }
+                            } else {
+                                for (let i = 0; i < totalSteps; i++) {
+                                    if (!revealedSteps[`${currentSlide}-${i}`]) {
+                                        setRevealedSteps(prev => ({ ...prev, [`${currentSlide}-${i}`]: true }));
+                                        break;
+                                    }
+                                }
+                            }
+                        } else {
+                            let totalSteps = 0;
+                            if (slide.type === 'concept') totalSteps = slide.content.length;
+                            else if (slide.type === 'symbols') totalSteps = slide.symbols.length;
+                            
+                            let allRevealed = true;
+                            for (let i = 0; i < totalSteps; i++) {
+                                if (!revealedSteps[`${currentSlide}-${i}`]) {
+                                    allRevealed = false;
+                                    break;
+                                }
+                            }
+                            
+                            if (allRevealed && totalSteps > 0) {
+                                if (currentSlide < slides.length - 1) {
+                                    setCurrentSlide(prev => prev + 1);
+                                    setRevealedSteps({});
+                                }
+                            } else {
+                                for (let i = 0; i < totalSteps; i++) {
+                                    if (!revealedSteps[`${currentSlide}-${i}`]) {
+                                        setRevealedSteps(prev => ({ ...prev, [`${currentSlide}-${i}`]: true }));
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        
+                        if (slide.type === 'title') {
+                            if (currentSlide > 0) {
+                                setCurrentSlide(prev => prev - 1);
+                                setRevealedSteps({});
+                            }
+                            return;
+                        }
+                        
+                        let totalSteps = 0;
+                        
+                        if (slide.type === 'concept') totalSteps = slide.content.length;
+                        else if (slide.type === 'symbols') totalSteps = slide.symbols.length;
+                        else if (slide.type === 'example') totalSteps = slide.algorithm.length + slide.flowchartSteps.length;
+                        
+                        let anyRevealed = false;
+                        for (let i = 0; i < totalSteps; i++) {
+                            if (revealedSteps[`${currentSlide}-${i}`]) {
+                                anyRevealed = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!anyRevealed && currentSlide > 0) {
+                            setCurrentSlide(prev => prev - 1);
+                            setRevealedSteps({});
+                            return;
+                        }
+                        
+                        for (let i = totalSteps - 1; i >= 0; i--) {
+                            if (revealedSteps[`${currentSlide}-${i}`]) {
+                                const newRevealed = { ...revealedSteps };
+                                delete newRevealed[`${currentSlide}-${i}`];
+                                setRevealedSteps(newRevealed);
+                                break;
+                            }
+                        }
+                    }
+                };
+
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [currentSlide, revealedSteps, slides]);
+
+            const toggleStep = (slideIdx, stepIdx) => {
+                const key = `${slideIdx}-${stepIdx}`;
+                setRevealedSteps(prev => ({ ...prev, [key]: !prev[key] }));
+            };
+
+            const revealAll = (slideIdx, totalSteps) => {
+                const newRevealed = { ...revealedSteps };
+                for (let i = 0; i < totalSteps; i++) {
+                    newRevealed[`${slideIdx}-${i}`] = true;
+                }
+                setRevealedSteps(newRevealed);
+            };
+
+            const hideAll = () => {
+                setRevealedSteps({});
+            };
+
+            const renderFlowchartStep = (step, index, yPos, isYesBranch = false, isNoBranch = false, xOffset = 0) => {
+                const centerX = 150 + xOffset;
+                const elements = [];
+                
+                if (step.type === 'start' || step.type === 'stop') {
+                    const color = step.type === 'start' ? '#4ade80' : '#f87171';
+                    elements.push(
+                        <g key={`step-${index}`}>
+                            <ellipse cx={centerX} cy={yPos} rx="28" ry="12" fill={color} stroke="#000" strokeWidth="2"/>
+                            <text x={centerX} y={yPos + 4} textAnchor="middle" fontSize="10" fontWeight="bold">{step.text}</text>
+                        </g>
+                    );
+                } else if (step.type === 'input' || step.type === 'output') {
+                    const lines = step.text.split('\n');
+                    elements.push(
+                        <g key={`step-${index}`}>
+                            <path d={`M ${centerX - 40} ${yPos - 14} L ${centerX + 40} ${yPos - 14} L ${centerX + 28} ${yPos + 14} L ${centerX - 52} ${yPos + 14} Z`} 
+                                fill="#93c5fd" stroke="#000" strokeWidth="2"/>
+                            {lines.map((line, i) => (
+                                <text key={i} x={centerX - 6} y={yPos + (lines.length === 1 ? 4 : -2 + i * 10)} 
+                                    textAnchor="middle" fontSize="8">{line}</text>
+                            ))}
+                        </g>
+                    );
+                } else if (step.type === 'process') {
+                    const lines = step.text.split('\n');
+                    elements.push(
+                        <g key={`step-${index}`}>
+                            <rect x={centerX - 46} y={yPos - 13} width="92" height="26" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                            {lines.map((line, i) => (
+                                <text key={i} x={centerX} y={yPos + (lines.length === 1 ? 4 : -2 + i * 10)} 
+                                    textAnchor="middle" fontSize="7.5">{line}</text>
+                            ))}
+                        </g>
+                    );
+                } else if (step.type === 'decision') {
+                    const lines = step.text.split('\n');
+                    elements.push(
+                        <g key={`step-${index}`}>
+                            <path d={`M ${centerX} ${yPos - 18} L ${centerX + 32} ${yPos} L ${centerX} ${yPos + 18} L ${centerX - 32} ${yPos} Z`} 
+                                fill="#c084fc" stroke="#000" strokeWidth="2"/>
+                            {lines.map((line, i) => (
+                                <text key={i} x={centerX} y={yPos + (lines.length === 1 ? 3 : -2 + i * 8)} 
+                                    textAnchor="middle" fontSize="7">{line}</text>
+                            ))}
+                        </g>
+                    );
+                } else if (step.type === 'connector') {
+                    elements.push(
+                        <g key={`step-${index}`}>
+                            <circle cx={centerX} cy={yPos} r="8" fill="#fff" stroke="#000" strokeWidth="2"/>
+                        </g>
+                    );
+                }
+                
+                return elements;
+            };
+
+            const renderFullFlowchart = (steps) => {
+                const elements = [];
+                const slide = slides[currentSlide];
+                const title = slide.title;
+                
+                // Check if this is a branching flowchart (examples 4-7)
+                const isBranching = title.includes('Largest') || title.includes('Positive') || 
+                                   title.includes('Odd') || title.includes('Average');
+                
+                if (!isBranching) {
+                    // Simple linear flowchart
+                    const revealedCount = steps.filter((_, index) => 
+                        revealedSteps[`${currentSlide}-${slide.algorithm.length + index}`]
+                    ).length;
+                    
+                    const maxHeight = 340;
+                    const spacing = revealedCount > 0 ? Math.min(48, maxHeight / (revealedCount + 1)) : 48;
+                    let yPos = 25;
+                    
+                    steps.forEach((step, index) => {
+                        if (revealedSteps[`${currentSlide}-${slide.algorithm.length + index}`]) {
+                            elements.push(...renderFlowchartStep(step, index, yPos));
+                            
+                            if (index < steps.length - 1 && revealedSteps[`${currentSlide}-${slide.algorithm.length + index + 1}`]) {
+                                elements.push(
+                                    <g key={`arrow-${index}`}>
+                                        <line x1="150" y1={yPos + (step.type === 'decision' ? 18 : step.type === 'start' || step.type === 'stop' ? 12 : 14)} 
+                                            x2="150" y2={yPos + spacing - (steps[index + 1].type === 'decision' ? 18 : steps[index + 1].type === 'start' || steps[index + 1].type === 'stop' ? 12 : 14)} 
+                                            stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    </g>
+                                );
+                            }
+                            yPos += spacing;
+                        }
+                    });
+                } else {
+                    // Branching flowchart
+                    let yPos = 25;
+                    const spacing = 50;
+                    
+                    steps.forEach((step, index) => {
+                        if (revealedSteps[`${currentSlide}-${slide.algorithm.length + index}`]) {
+                            if (index === 0) {
+                                // Start
+                                elements.push(...renderFlowchartStep(step, index, yPos));
+                                if (revealedSteps[`${currentSlide}-${slide.algorithm.length + 1}`]) {
+                                    elements.push(<line key="arrow-0" x1="150" y1={yPos + 12} x2="150" y2={yPos + spacing - 14} stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>);
+                                }
+                            } else if (index === 1) {
+                                // Input
+                                yPos += spacing;
+                                elements.push(...renderFlowchartStep(step, index, yPos));
+                                if (revealedSteps[`${currentSlide}-${slide.algorithm.length + 2}`]) {
+                                    elements.push(<line key="arrow-1" x1="150" y1={yPos + 14} x2="150" y2={yPos + spacing - 18} stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>);
+                                }
+                            } else if (index === 2) {
+                                // Decision
+                                yPos += spacing;
+                                elements.push(...renderFlowchartStep(step, index, yPos));
+                                
+                                // Yes branch (right)
+                                if (revealedSteps[`${currentSlide}-${slide.algorithm.length + 3}`]) {
+                                    elements.push(<line key="arrow-yes-h" x1="182" y1={yPos} x2="210" y2={yPos} stroke="#000" strokeWidth="2"/>);
+                                    elements.push(<line key="arrow-yes-v" x1="210" y1={yPos} x2="210" y2={yPos + 35} stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>);
+                                    elements.push(<text key="text-yes" x="195" y={yPos - 3} fontSize="8" fontWeight="bold">Yes</text>);
+                                }
+                                
+                                // No branch (left)
+                                if (revealedSteps[`${currentSlide}-${slide.algorithm.length + 4}`]) {
+                                    elements.push(<line key="arrow-no-h" x1="118" y1={yPos} x2="90" y2={yPos} stroke="#000" strokeWidth="2"/>);
+                                    elements.push(<line key="arrow-no-v" x1="90" y1={yPos} x2="90" y2={yPos + 35} stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>);
+                                    elements.push(<text key="text-no" x="102" y={yPos - 3} fontSize="8" fontWeight="bold">No</text>);
+                                }
+                            } else if (index === 3) {
+                                // Yes output (right)
+                                elements.push(...renderFlowchartStep(step, index, yPos + 35, false, false, 60));
+                                
+                                // Down to connector
+                                if (revealedSteps[`${currentSlide}-${slide.algorithm.length + 5}`] || 
+                                    (title.includes('Average') && revealedSteps[`${currentSlide}-${slide.algorithm.length + 6}`])) {
+                                    elements.push(<line key="arrow-yes-down" x1="210" y1={yPos + 49} x2="210" y2={yPos + 75} stroke="#000" strokeWidth="2"/>);
+                                }
+                            } else if (index === 4) {
+                                // No output (left)
+                                elements.push(...renderFlowchartStep(step, index, yPos + 35, false, false, -60));
+                                
+                                // Down to connector
+                                if (revealedSteps[`${currentSlide}-${slide.algorithm.length + 5}`] || 
+                                    (title.includes('Average') && revealedSteps[`${currentSlide}-${slide.algorithm.length + 6}`])) {
+                                    elements.push(<line key="arrow-no-down" x1="90" y1={yPos + 49} x2="90" y2={yPos + 75} stroke="#000" strokeWidth="2"/>);
+                                }
+                            } else if (index === 5 && !title.includes('Average')) {
+                                // Connector and Stop (for examples 4, 5, 6)
+                                elements.push(
+                                    <g key="connector-merge">
+                                        <line x1="90" y1={yPos + 75} x2="150" y2={yPos + 75} stroke="#000" strokeWidth="2"/>
+                                        <line x1="210" y1={yPos + 75} x2="150" y2={yPos + 75} stroke="#000" strokeWidth="2"/>
+                                        <circle cx="150" cy={yPos + 75} r="8" fill="#fff" stroke="#000" strokeWidth="2"/>
+                                        <line x1="150" y1={yPos + 83} x2="150" y2={yPos + 100} stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    </g>
+                                );
+                                elements.push(...renderFlowchartStep(step, index, yPos + 112));
+                            } else if (index === 5 && title.includes('Average')) {
+                                // Second decision for Average example
+                                elements.push(
+                                    <g key="connector-merge-1">
+                                        <line x1="90" y1={yPos + 75} x2="150" y2={yPos + 75} stroke="#000" strokeWidth="2"/>
+                                        <line x1="210" y1={yPos + 75} x2="150" y2={yPos + 75} stroke="#000" strokeWidth="2"/>
+                                        <circle cx="150" cy={yPos + 75} r="8" fill="#fff" stroke="#000" strokeWidth="2"/>
+                                        <line x1="150" y1={yPos + 83} x2="150" y2={yPos + 100} stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    </g>
+                                );
+                                yPos += 50;
+                                elements.push(...renderFlowchartStep(step, index, yPos + 62));
+                                
+                                // Branches for second decision
+                                if (revealedSteps[`${currentSlide}-${slide.algorithm.length + 6}`]) {
+                                    elements.push(<line key="arrow-yes2-h" x1="182" y1={yPos + 62} x2="210" y2={yPos + 62} stroke="#000" strokeWidth="2"/>);
+                                    elements.push(<line key="arrow-yes2-v" x1="210" y1={yPos + 62} x2="210" y2={yPos + 97} stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>);
+                                    elements.push(<text key="text-yes2" x="195" y={yPos + 59} fontSize="8" fontWeight="bold">Yes</text>);
+                                }
+                                
+                                if (revealedSteps[`${currentSlide}-${slide.algorithm.length + 7}`]) {
+                                    elements.push(<line key="arrow-no2-h" x1="118" y1={yPos + 62} x2="90" y2={yPos + 62} stroke="#000" strokeWidth="2"/>);
+                                    elements.push(<line key="arrow-no2-v" x1="90" y1={yPos + 62} x2="90" y2={yPos + 97} stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>);
+                                    elements.push(<text key="text-no2" x="102" y={yPos + 59} fontSize="8" fontWeight="bold">No</text>);
+                                }
+                            } else if (index === 6 && title.includes('Average')) {
+                                // "Needs Improvement" output (right)
+                                elements.push(...renderFlowchartStep(step, index, yPos + 97, false, false, 60));
+                                
+                                if (revealedSteps[`${currentSlide}-${slide.algorithm.length + 8}`]) {
+                                    elements.push(<line key="arrow-yes2-down" x1="210" y1={yPos + 111} x2="210" y2={yPos + 137} stroke="#000" strokeWidth="2"/>);
+                                }
+                            } else if (index === 7 && title.includes('Average')) {
+                                // "Good Work" output (left)
+                                elements.push(...renderFlowchartStep(step, index, yPos + 97, false, false, -60));
+                                
+                                if (revealedSteps[`${currentSlide}-${slide.algorithm.length + 8}`]) {
+                                    elements.push(<line key="arrow-no2-down" x1="90" y1={yPos + 111} x2="90" y2={yPos + 137} stroke="#000" strokeWidth="2"/>);
+                                }
+                            } else if (index === 8 && title.includes('Average')) {
+                                // Final connector and Stop
+                                elements.push(
+                                    <g key="connector-merge-2">
+                                        <line x1="90" y1={yPos + 137} x2="150" y2={yPos + 137} stroke="#000" strokeWidth="2"/>
+                                        <line x1="210" y1={yPos + 137} x2="150" y2={yPos + 137} stroke="#000" strokeWidth="2"/>
+                                        <circle cx="150" cy={yPos + 137} r="8" fill="#fff" stroke="#000" strokeWidth="2"/>
+                                        <line x1="150" y1={yPos + 145} x2="150" y2={yPos + 162} stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    </g>
+                                );
+                                elements.push(...renderFlowchartStep(step, index, yPos + 174));
+                            }
+                        }
+                    });
+                }
+                
+                return elements;
+            };
+
+            const slide = slides[currentSlide];
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex flex-col items-center justify-center p-4">
+                    <div className="bg-white rounded-xl shadow-2xl h-full flex flex-col" style={{ width: '1280px', height: '720px', maxWidth: '95vw', maxHeight: '95vh' }}>
+                        
+                        <div className="flex-1 overflow-auto p-8">
+                            {slide.type === 'title' && (
+                                <div className="h-full flex flex-col items-center justify-center text-center space-y-5">
+                                    <div className="text-blue-600 font-bold text-xl">{slide.content.courseCode}</div>
+                                    <div className="text-2xl font-semibold text-gray-700">{slide.content.courseTitle}</div>
+                                    <div className="text-5xl font-bold text-gray-900 mt-6">{slide.content.topic}</div>
+                                    <div className="mt-10 text-lg text-gray-600">Prepared by: {slide.content.faculty}</div>
+                                </div>
+                            )}
+
+                            {slide.type === 'thankyou' && (
+                                <div className="flex flex-col items-center justify-center h-full text-center">
+                                    <h1 className="text-9xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                                        Thank You
+                                    </h1>
+                                </div>
+                            )}
+
+                            {slide.type === 'concept' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-3xl font-bold text-blue-900 mb-5 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 flex flex-col justify-center space-y-4">
+                                        {slide.content.map((item, idx) => (
+                                            <div key={idx} className="flex items-start space-x-3">
+                                                <button
+                                                    onClick={() => toggleStep(currentSlide, idx)}
+                                                    className="mt-1 flex-shrink-0 w-7 h-7 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-all"
+                                                >
+                                                    {revealedSteps[`${currentSlide}-${idx}`] ? <Eye /> : <EyeOff />}
+                                                </button>
+                                                <div className={`text-xl transition-all duration-500 ${
+                                                    revealedSteps[`${currentSlide}-${idx}`]
+                                                        ? 'opacity-100 transform translate-x-0'
+                                                        : 'opacity-0 transform -translate-x-4'
+                                                }`}>
+                                                    <span className="text-blue-600 font-bold mr-3">▸</span>
+                                                    {item}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    
+                                </div>
+                            )}
+
+                            {slide.type === 'symbols' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-3xl font-bold text-blue-900 mb-5 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 grid grid-cols-2 gap-4 overflow-auto">
+                                        {slide.symbols.map((symbol, idx) => (
+                                            <div key={idx} className="flex items-center space-x-3">
+                                                <button onClick={() => toggleStep(currentSlide, idx)}
+                                                        className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center">
+                                                    {revealedSteps[`${currentSlide}-${idx}`] ? <Eye /> : <EyeOff />}
+                                                </button>
+                                                <div className={`flex-1 border-2 border-gray-300 rounded-lg p-3 transition-all duration-500 ${
+                                                    revealedSteps[`${currentSlide}-${idx}`]
+                                                        ? 'opacity-100 transform scale-100'
+                                                        : 'opacity-0 transform scale-95'
+                                                }`}>
+                                                    <div className="flex items-center space-x-3">
+                                                        <div className="w-24 h-20 flex items-center justify-center flex-shrink-0">
+                                                            {symbol.shape === 'oval' && (
+                                                                <svg width="75" height="50" viewBox="0 0 75 50">
+                                                                    <ellipse cx="37.5" cy="25" rx="34" ry="20" fill="#4ade80" stroke="#000" strokeWidth="2"/>
+                                                                </svg>
+                                                            )}
+                                                            {symbol.shape === 'parallelogram' && (
+                                                                <svg width="85" height="50" viewBox="0 0 85 50">
+                                                                    <path d="M 10 10 L 75 10 L 60 40 L -5 40 Z" fill="#93c5fd" stroke="#000" strokeWidth="2"/>
+                                                                </svg>
+                                                            )}
+                                                            {symbol.shape === 'rectangle' && (
+                                                                <svg width="75" height="50" viewBox="0 0 75 50">
+                                                                    <rect x="5" y="10" width="65" height="30" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="3"/>
+                                                                </svg>
+                                                            )}
+                                                            {symbol.shape === 'diamond' && (
+                                                                <svg width="75" height="60" viewBox="0 0 75 60">
+                                                                    <path d="M 37.5 5 L 70 30 L 37.5 55 L 5 30 Z" fill="#c084fc" stroke="#000" strokeWidth="2"/>
+                                                                </svg>
+                                                            )}
+                                                            {symbol.shape === 'arrow' && (
+                                                                <svg width="75" height="50" viewBox="0 0 75 50">
+                                                                    <line x1="10" y1="25" x2="60" y2="25" stroke="#000" strokeWidth="3"/>
+                                                                    <polygon points="55,18 67,25 55,32" fill="#000"/>
+                                                                </svg>
+                                                            )}
+                                                            {symbol.shape === 'circle' && (
+                                                                <svg width="50" height="50" viewBox="0 0 50 50">
+                                                                    <circle cx="25" cy="25" r="20" fill="#fff" stroke="#000" strokeWidth="2"/>
+                                                                </svg>
+                                                            )}
+                                                            {symbol.shape === 'offpage' && (
+                                                                <svg width="60" height="60" viewBox="0 0 60 60">
+                                                                    <path d="M 10 10 L 50 10 L 50 40 L 30 50 L 10 40 Z" fill="#fcd34d" stroke="#000" strokeWidth="2"/>
+                                                                </svg>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="font-bold text-base text-gray-800">{symbol.name}</div>
+                                                            <div className="text-sm text-gray-600">{symbol.use}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    
+                                </div>
+                            )}
+
+                            {slide.type === 'example' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-2xl font-bold text-blue-900 mb-3 border-b-4 border-blue-500 pb-2">
+                                        {slide.title}
+                                    </h2>
+                                    {slide.hideFlowchart ? (
+                                        <div className="flex-1 overflow-auto">
+                                            <div className="max-w-4xl mx-auto">
+                                                <h3 className="text-xl font-semibold text-purple-700 mb-2">Algorithm</h3>
+                                                <div className="bg-gray-50 rounded-lg p-4 border-2 border-purple-300">
+                                                    <div className="space-y-2">
+                                                        {slide.algorithm.map((step, idx) => (
+                                                            <div key={idx} className="flex items-start space-x-2">
+                                                                <button onClick={() => toggleStep(currentSlide, idx)}
+                                                                        className="mt-1 flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 hover:bg-purple-600 text-white flex items-center justify-center text-xs transition-all">
+                                                                    {revealedSteps[`${currentSlide}-${idx}`] ? <Eye /> : <EyeOff />}
+                                                                </button>
+                                                                <div className={`flex-1 p-2 rounded transition-all ${
+                                                                    revealedSteps[`${currentSlide}-${idx}`]
+                                                                        ? 'bg-purple-100 border-l-4 border-purple-500'
+                                                                        : 'bg-white border-l-4 border-gray-300 opacity-40'
+                                                                }`}>
+                                                                    <span className="text-sm font-mono">{step}</span>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="flex-1 grid grid-cols-2 gap-5 min-h-0">
+                                        <div className="flex flex-col min-h-0">
+                                            <h3 className="text-xl font-semibold text-purple-700 mb-2">Algorithm</h3>
+                                            <div className="flex-1 bg-gray-50 rounded-lg p-4 border-2 border-purple-300 overflow-auto">
+                                                <div className="space-y-2">
+                                                    {slide.algorithm.map((step, idx) => (
+                                                        <div key={idx} className="flex items-start space-x-2">
+                                                            <button onClick={() => toggleStep(currentSlide, idx)}
+                                                                    className="mt-1 flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 hover:bg-purple-600 text-white flex items-center justify-center text-xs transition-all">
+                                                                {revealedSteps[`${currentSlide}-${idx}`] ? <Eye /> : <EyeOff />}
+                                                            </button>
+                                                            <div className={`flex-1 transition-all duration-500 ${
+                                                                revealedSteps[`${currentSlide}-${idx}`]
+                                                                    ? 'opacity-100 transform translate-x-0'
+                                                                    : 'opacity-0 transform -translate-x-4'
+                                                            }`}>
+                                                                <div className="flex items-start">
+                                                                    <span className="font-bold text-purple-700 mr-2 text-base min-w-[65px]">
+                                                                        Step {idx + 1}:
+                                                                    </span>
+                                                                    <span className="text-gray-800 font-mono text-lg">{step}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-col min-h-0">
+                                            <h3 className="text-xl font-semibold text-green-700 mb-2">Flowchart</h3>
+                                            <div className="flex-1 bg-gray-50 rounded-lg p-3 border-2 border-green-300 flex items-center justify-center overflow-hidden">
+                                                <svg viewBox="0 0 300 400" className="w-full h-full object-contain" preserveAspectRatio="xMidYMid meet"
+     style={{ width: '100%', height: '100%', maxWidth: '100%', maxHeight: '100%', transform: 'scale(1.6)', transformOrigin: 'top' }}>
+                                                    {renderFullFlowchart(slide.flowchartSteps)}
+                                                    <defs>
+                                                        <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="2" orient="auto">
+                                                            <polygon points="0 0, 6 2, 0 4" fill="#000"/>
+                                                        </marker>
+                                                    </defs>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    )}
+                                    
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="border-t-2 border-gray-200 p-4 bg-gray-50">
+                            <div className="flex items-center justify-between">
+                                <button onClick={() => { setCurrentSlide(Math.max(0, currentSlide - 1)); setRevealedSteps({}); }}
+                                        disabled={currentSlide === 0}
+                                        className="flex items-center gap-2 px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all text-sm">
+                                    <ChevronLeft />
+                                    Previous
+                                </button>
+
+                                <div className="text-center">
+                                    <div className="text-sm text-gray-500">Slide</div>
+                                    <div className="text-lg font-bold text-gray-800">{currentSlide + 1} / {slides.length}</div>
+                                    <div className="text-xs text-gray-500 mt-1">← → Navigate | ↓ Space Reveal/Next | ↑ Hide | Tab Skip | B Reveal All</div>
+                                </div>
+
+                                <button onClick={() => { setCurrentSlide(Math.min(slides.length - 1, currentSlide + 1)); setRevealedSteps({}); }}
+                                        disabled={currentSlide === slides.length - 1}
+                                        className="flex items-center gap-2 px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all text-sm">
+                                    Next
+                                    <ChevronRight />
+                                </button>
+                            </div>
+
+                            <div className="flex justify-center gap-2 mt-3">
+                                {slides.map((_, idx) => (
+                                    <button key={idx} onClick={() => { setCurrentSlide(idx); setRevealedSteps({}); }}
+                                            className={`h-2 rounded-full transition-all ${
+                                                idx === currentSlide ? 'w-8 bg-blue-600' : 'w-2 bg-gray-300 hover:bg-gray-400'
+                                            }`}/>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<FlowchartPresentation />);
+    </script>
+</body>
+</html>
