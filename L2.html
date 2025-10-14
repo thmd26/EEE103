@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm & Flowchart Practice - EEE 103 L2</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const ChevronLeft = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        );
+
+        const ChevronRight = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        );
+
+        const Eye = () => (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        );
+
+        const EyeOff = () => (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+        );
+
+        const FlowchartPresentation = () => {
+            const [currentSlide, setCurrentSlide] = useState(0);
+            const [revealedSteps, setRevealedSteps] = useState({});
+            const [revealCounter, setRevealCounter] = useState({});
+
+            const slides = [
+                {
+                    type: 'title',
+                    content: {
+                        courseCode: 'EEE: 103',
+                        courseTitle: 'Computer Programming',
+                        topic: 'L2: Algorithms & Flowcharts',
+                        subtitle: 'Loop Problems',
+                        faculty: 'Sk Tahmed Salim Rafid'
+                    }
+                },
+                {
+                    type: 'problem',
+                    number: 1,
+                    title: 'Grade Determination Based on Marks',
+                    description: 'Determine the grade (A, B, C, or F) based on marks scored.',
+                    rules: [
+                        'Mark ≥ 80 → Grade = A',
+                        'Mark ≥ 60 → Grade = B',
+                        'Mark ≥ 50 → Grade = C',
+                        'Otherwise → Grade = F'
+                    ],
+                    algorithm: [
+                        'Start',
+                        'Declare variable: Mark',
+                        'Input Mark',
+                        'If Mark ≥ 80 then go to Step 5 else go to Step 6',
+                        'Print "Grade = A" and go to Step 11',
+                        'If Mark ≥ 60 then go to Step 7 else go to Step 8',
+                        'Print "Grade = B" and go to Step 11',
+                        'If Mark ≥ 50 then go to Step 9 else go to Step 10',
+                        'Print "Grade = C" and go to Step 11',
+                        'Print "Grade = F"',
+                        'Stop'
+                    ],
+                    flowchartType: 'nested-decision'
+                },
+                {
+                    type: 'problem',
+                    number: 2,
+                    title: 'Minimum of Three Numbers',
+                    description: 'Find the minimum value among three numbers A, B, and C.',
+                    algorithm: [
+                        'Start',
+                        'Declare variables: A, B, C, Min',
+                        'Input A, B, C',
+                        'Set Min = A',
+                        'If B < Min then go to Step 6 else go to Step 7',
+                        'Set Min = B and go to Step 7',
+                        'If C < Min then go to Step 8 else go to Step 9',
+                        'Set Min = C and go to Step 9',
+                        'Print Min',
+                        'Stop'
+                    ],
+                    flowchartType: 'sequential-decision'
+                },
+                {
+                    type: 'problem',
+                    number: 3,
+                    title: 'Print All Numbers from 1 to n',
+                    description: 'Print all integers from 1 to n using a loop.',
+                    algorithm: [
+                        'Start',
+                        'Declare variables: i, n',
+                        'Input n',
+                        'Set i = 1',
+                        'If i > n then go to Step 8 else go to Step 6',
+                        'Print i',
+                        'Set i = i + 1 and go to Step 5',
+                        'Stop'
+                    ],
+                    flowchartType: 'simple-loop'
+                },
+                {
+                    type: 'problem',
+                    number: 4,
+                    title: 'Sum of Series 1 + 2 + 3 + ... + n',
+                    description: 'Calculate the sum of first n natural numbers.',
+                    algorithm: [
+                        'Start',
+                        'Declare variables: i, n, sum',
+                        'Input n',
+                        'Set sum = 0',
+                        'Set i = 1',
+                        'If i > n then go to Step 10 else go to Step 7',
+                        'Set sum = sum + i',
+                        'Set i = i + 1',
+                        'Go to Step 6',
+                        'Print sum',
+                        'Stop'
+                    ],
+                    flowchartType: 'accumulator-loop'
+                },
+                {
+                    type: 'problem',
+                    number: 5,
+                    title: 'Sum of Series 1 + 4 + 7 + 10 + ... (last term < n)',
+                    description: 'Calculate sum of arithmetic series with common difference 3, where last term is less than n.',
+                    algorithm: [
+                        'Start',
+                        'Declare variables: term, n, sum',
+                        'Input n',
+                        'Set term = 1',
+                        'Set sum = 0',
+                        'If term ≥ n then go to Step 10 else go to Step 7',
+                        'Set sum = sum + term',
+                        'Set term = term + 3',
+                        'Go to Step 6',
+                        'Print sum',
+                        'Stop'
+                    ],
+                    flowchartType: 'conditional-loop'
+                },
+                {
+                    type: 'problem',
+                    number: 6,
+                    title: 'Sum of First n Terms of Series 1 + 4 + 7 + 10 + ...',
+                    description: 'Calculate sum of first n terms of arithmetic series with common difference 3.',
+                    algorithm: [
+                        'Start',
+                        'Declare variables: i, n, term, sum',
+                        'Input n',
+                        'Set term = 1',
+                        'Set sum = 0',
+                        'Set i = 1',
+                        'If i > n then go to Step 12 else go to Step 8',
+                        'Set sum = sum + term',
+                        'Set term = term + 3',
+                        'Set i = i + 1',
+                        'Go to Step 7',
+                        'Print sum',
+                        'Stop'
+                    ],
+                    flowchartType: 'counter-loop'
+                },
+                {
+                    type: 'problem',
+                    number: 7,
+                    title: 'Factorial of a Number n',
+                    description: 'Calculate n! = 1 × 2 × 3 × ... × n',
+                    algorithm: [
+                        'Start',
+                        'Declare variables: n, i, fact',
+                        'Input n',
+                        'Set fact = 1',
+                        'Set i = 1',
+                        'If i > n then go to Step 11 else go to Step 7',
+                        'Set fact = fact × i',
+                        'Set i = i + 1',
+                        'Go to Step 6',
+                        '(unused)',
+                        'Print fact',
+                        'Stop'
+                    ],
+                    flowchartType: 'multiplication-loop'
+                },
+                {
+                    type: 'problem',
+                    number: 8,
+                    title: 'Tuition Fee Calculation',
+                    description: 'Calculate total tuition fee based on credits and CGPA with discount.',
+                    rules: [
+                        'Cost per credit = 8250 TK',
+                        'Semester fee = 9350 TK',
+                        'If CGPA ≥ 3.5, apply 25% discount on total'
+                    ],
+                    algorithm: [
+                        'Start',
+                        'Declare variables: credits, CGPA, costPerCredit, tuition, total, discount',
+                        'Set costPerCredit = 8250',
+                        'Set semesterFee = 9350',
+                        'Input credits, CGPA',
+                        'Set tuition = credits × costPerCredit',
+                        'Set total = tuition + semesterFee',
+                        'If CGPA ≥ 3.5 then go to Step 9 else go to Step 10',
+                        'Set discount = 0.25 × total; Set total = total - discount; go to Step 11',
+                        'Set discount = 0',
+                        'Print total',
+                        'Stop'
+                    ],
+                    flowchartType: 'calculation-decision'
+                },
+                {
+                    type: 'thankyou'
+                }
+            ];
+
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === 'b' || e.key === 'B') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        if (slide.type === 'problem') {
+                            const flowchartSteps = {
+                                'nested-decision': 11,
+                                'sequential-decision': 10,
+                                'simple-loop': 8,
+                                'accumulator-loop': 11,
+                                'calculation-decision': 12,
+                                'conditional-loop': 11,
+                                'counter-loop': 9,
+                                'multiplication-loop': 9
+                            };
+                            const flowchartStepCount = flowchartSteps[slide.flowchartType] || 10;
+                            const totalSteps = slide.algorithm.length;
+                            const slideKey = `slide-${currentSlide}`;
+                            const totalNeeded = flowchartStepCount + totalSteps;
+                            setRevealCounter(prev => ({
+                                ...prev,
+                                [slideKey]: totalNeeded
+                            }));
+                        }
+                    } else if (e.key === 'Tab') {
+                        e.preventDefault();
+                        if (currentSlide < slides.length - 1) {
+                            setCurrentSlide(prev => prev + 1);
+                            setRevealedSteps({});
+                        }
+                    } else if (e.key === 'ArrowRight') {
+                        setCurrentSlide(prev => Math.min(slides.length - 1, prev + 1));
+                        setRevealedSteps({});
+                        setRevealCounter({});
+                    } else if (e.key === 'ArrowLeft') {
+                        setCurrentSlide(prev => Math.max(0, prev - 1));
+                        setRevealedSteps({});
+                        setRevealCounter({});
+                    } else if (e.key === 'ArrowDown' || e.key === ' ') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+
+                        if (slide.type === 'title' || slide.type === 'thankyou') {
+                            if (currentSlide < slides.length - 1) {
+                                setCurrentSlide(prev => prev + 1);
+                                setRevealedSteps({});
+                                setRevealCounter({});
+                            }
+                            return;
+                        }
+
+                        if (slide.type === 'problem') {
+                            const flowchartSteps = {
+                                'nested-decision': 11,
+                                'sequential-decision': 10,
+                                'simple-loop': 8,
+                                'accumulator-loop': 11,
+                                'calculation-decision': 12,
+                                'conditional-loop': 11,
+                                'counter-loop': 9,
+                                'multiplication-loop': 9
+                            };
+
+                            const flowchartStepCount = flowchartSteps[slide.flowchartType] || 10;
+                            const totalSteps = slide.algorithm.length;
+                            const slideKey = `slide-${currentSlide}`;
+                            const currentCounter = revealCounter[slideKey] || 0;
+                            const totalNeeded = flowchartStepCount + totalSteps;
+
+                            if (currentCounter < totalNeeded) {
+                                setRevealCounter(prev => ({
+                                    ...prev,
+                                    [slideKey]: currentCounter + 1
+                                }));
+                            } else {
+                                if (currentSlide < slides.length - 1) {
+                                    setCurrentSlide(prev => prev + 1);
+                                    setRevealedSteps({});
+                                    setRevealCounter({});
+                                }
+                            }
+                        }
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        
+                        if (slide.type === 'title' || slide.type === 'thankyou') {
+                            if (currentSlide > 0) {
+                                setCurrentSlide(prev => prev - 1);
+                                setRevealedSteps({});
+                            }
+                            return;
+                        }
+                        
+                        if (slide.type === 'problem') {
+                            const totalSteps = slide.algorithm.length;
+                            
+                            let anyRevealed = false;
+                            for (let i = 0; i < totalSteps; i++) {
+                                if (revealedSteps[`${currentSlide}-${i}`]) {
+                                    anyRevealed = true;
+                                    break;
+                                }
+                            }
+                            
+                            if (!anyRevealed && currentSlide > 0) {
+                                setCurrentSlide(prev => prev - 1);
+                                setRevealedSteps({});
+                                return;
+                            }
+                            
+                            for (let i = totalSteps - 1; i >= 0; i--) {
+                                if (revealedSteps[`${currentSlide}-${i}`]) {
+                                    const newRevealed = { ...revealedSteps };
+                                    delete newRevealed[`${currentSlide}-${i}`];
+                                    setRevealedSteps(newRevealed);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                };
+
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [currentSlide, revealedSteps, slides]);
+
+            const toggleStep = (slideIdx, stepIdx) => {
+                const key = `${slideIdx}-${stepIdx}`;
+                setRevealedSteps(prev => ({ ...prev, [key]: !prev[key] }));
+            };
+
+            const renderFlowchart = (type, slideIdx) => {
+                const slide = slides[currentSlide];
+                const slideKey = `slide-${slideIdx}`;
+                const revealedCount = revealCounter[slideKey] || 0;
+
+                if (type === 'nested-decision') {
+                    return (
+                        <svg viewBox="0 0 450 550" className="w-full h-full">
+                            <defs>
+                                <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="2" orient="auto">
+                                    <polygon points="0 0, 6 2, 0 4" fill="#000"/>
+                                </marker>
+                            </defs>
+
+                            {/* Start */}
+                            {revealedCount >= 1 && (
+                                <>
+                                    <ellipse cx="225" cy="30" rx="35" ry="15" fill="#4ade80" stroke="#000" strokeWidth="2"/>
+                                    <text x="225" y="35" textAnchor="middle" fontSize="12" fontWeight="bold">Start</text>
+                                </>
+                            )}
+
+                            {revealedCount >= 2 && <line x1="225" y1="45" x2="225" y2="65" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>}
+
+                            {/* Input Mark */}
+                            {revealedCount >= 3 && (
+                                <>
+                                    <path d="M 165 65 L 285 65 L 270 95 L 150 95 Z" fill="#93c5fd" stroke="#000" strokeWidth="2"/>
+                                    <text x="215" y="85" textAnchor="middle" fontSize="11">Input Mark</text>
+                                </>
+                            )}
+
+                            {revealedCount >= 4 && <line x1="225" y1="95" x2="225" y2="115" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>}
+
+                            {/* Decision Mark >= 80 */}
+                            {revealedCount >= 4 && (
+                                <>
+                                    <path d="M 225 115 L 275 145 L 225 175 L 175 145 Z" fill="#c084fc" stroke="#000" strokeWidth="2"/>
+                                    <text x="225" y="150" textAnchor="middle" fontSize="10">Mark ≥ 80?</text>
+                                </>
+                            )}
+
+                            {/* Grade A branch */}
+                            {revealedCount >= 5 && (
+                                <>
+                                    <line x1="275" y1="145" x2="350" y2="145" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <text x="290" y="140" fontSize="9" fontWeight="bold">Yes</text>
+
+                                    <path d="M 350 130 L 420 130 L 405 160 L 335 160 Z" fill="#93c5fd" stroke="#000" strokeWidth="2"/>
+                                    <text x="377" y="147" textAnchor="middle" fontSize="9">Grade = A</text>
+
+                                    {/* Line to right then down to convergence */}
+                                    <line x1="420" y1="145" x2="430" y2="145" stroke="#000" strokeWidth="2"/>
+                                    <line x1="430" y1="145" x2="430" y2="480" stroke="#000" strokeWidth="2"/>
+                                </>
+                            )}
+
+                            {/* Mark >= 60 decision */}
+                            {revealedCount >= 6 && (
+                                <>
+                                    <line x1="225" y1="175" x2="225" y2="210" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <text x="235" y="195" fontSize="9" fontWeight="bold">No</text>
+
+                                    <path d="M 225 210 L 275 240 L 225 270 L 175 240 Z" fill="#c084fc" stroke="#000" strokeWidth="2"/>
+                                    <text x="225" y="245" textAnchor="middle" fontSize="10">Mark ≥ 60?</text>
+                                </>
+                            )}
+
+                            {/* Grade B branch */}
+                            {revealedCount >= 7 && (
+                                <>
+                                    <line x1="275" y1="240" x2="350" y2="240" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <text x="290" y="235" fontSize="9" fontWeight="bold">Yes</text>
+
+                                    <path d="M 350 225 L 420 225 L 405 255 L 335 255 Z" fill="#93c5fd" stroke="#000" strokeWidth="2"/>
+                                    <text x="377" y="242" textAnchor="middle" fontSize="9">Grade = B</text>
+
+                                    {/* Line to right then down */}
+                                    <line x1="420" y1="240" x2="427" y2="240" stroke="#000" strokeWidth="2"/>
+                                    <line x1="427" y1="240" x2="427" y2="480" stroke="#000" strokeWidth="2"/>
+                                </>
+                            )}
+
+                            {/* Mark >= 50 decision */}
+                            {revealedCount >= 8 && (
+                                <>
+                                    <line x1="225" y1="270" x2="225" y2="305" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <text x="235" y="290" fontSize="9" fontWeight="bold">No</text>
+
+                                    <path d="M 225 305 L 275 335 L 225 365 L 175 335 Z" fill="#c084fc" stroke="#000" strokeWidth="2"/>
+                                    <text x="225" y="340" textAnchor="middle" fontSize="10">Mark ≥ 50?</text>
+                                </>
+                            )}
+
+                            {/* Grade C branch */}
+                            {revealedCount >= 9 && (
+                                <>
+                                    <line x1="275" y1="335" x2="350" y2="335" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <text x="290" y="330" fontSize="9" fontWeight="bold">Yes</text>
+
+                                    <path d="M 350 320 L 420 320 L 405 350 L 335 350 Z" fill="#93c5fd" stroke="#000" strokeWidth="2"/>
+                                    <text x="377" y="337" textAnchor="middle" fontSize="9">Grade = C</text>
+
+                                    {/* Line to right then down */}
+                                    <line x1="420" y1="335" x2="424" y2="335" stroke="#000" strokeWidth="2"/>
+                                    <line x1="424" y1="335" x2="424" y2="480" stroke="#000" strokeWidth="2"/>
+                                </>
+                            )}
+
+                            {/* Grade F branch (else/No) */}
+                            {revealedCount >= 10 && (
+                                <>
+                                    <line x1="175" y1="335" x2="90" y2="335" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <text x="155" y="330" fontSize="9" fontWeight="bold">No</text>
+
+                                    <path d="M 30 320 L 90 320 L 75 350 L 15 350 Z" fill="#93c5fd" stroke="#000" strokeWidth="2"/>
+                                    <text x="52" y="337" textAnchor="middle" fontSize="9">Grade = F</text>
+
+                                    {/* Line to left then down */}
+                                    <line x1="15" y1="335" x2="10" y2="335" stroke="#000" strokeWidth="2"/>
+                                    <line x1="10" y1="335" x2="10" y2="480" stroke="#000" strokeWidth="2"/>
+                                </>
+                            )}
+
+                            {/* Convergence and Stop */}
+                            {revealedCount >= 11 && (
+                                <>
+                                    {/* Horizontal convergence line */}
+                                    <line x1="10" y1="480" x2="430" y2="480" stroke="#000" strokeWidth="2"/>
+                                    <circle cx="225" cy="480" r="8" fill="#fff" stroke="#000" strokeWidth="2"/>
+
+                                    {/* Down to Stop */}
+                                    <line x1="225" y1="488" x2="225" y2="505" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+
+                                    <ellipse cx="225" cy="525" rx="35" ry="15" fill="#f87171" stroke="#000" strokeWidth="2"/>
+                                    <text x="225" y="530" textAnchor="middle" fontSize="12" fontWeight="bold">Stop</text>
+                                </>
+                            )}
+                        </svg>
+                    );
+                } else if (type === 'sequential-decision') {
+                    return (
+                        <svg viewBox="0 0 350 530" className="w-full h-full">
+                            <defs>
+                                <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="2" orient="auto">
+                                    <polygon points="0 0, 6 2, 0 4" fill="#000"/>
+                                </marker>
+                            </defs>
+                            
+                            {revealedCount >= 1 && (
+                                <>
+                                    <ellipse cx="175" cy="30" rx="35" ry="15" fill="#4ade80" stroke="#000" strokeWidth="2"/>
+                                    <text x="175" y="35" textAnchor="middle" fontSize="12" fontWeight="bold">Start</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 3 && (
+                                <>
+                                    <line x1="175" y1="45" x2="175" y2="65" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <path d="M 105 65 L 245 65 L 230 95 L 90 95 Z" fill="#93c5fd" stroke="#000" strokeWidth="2"/>
+                                    <text x="165" y="85" textAnchor="middle" fontSize="10">Input A, B, C</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 4 && (
+                                <>
+                                    <line x1="175" y1="95" x2="175" y2="115" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <rect x="115" y="115" width="120" height="30" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="175" y="135" textAnchor="middle" fontSize="11">Min = A</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 5 && (
+                                <>
+                                    <line x1="175" y1="145" x2="175" y2="170" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <path d="M 175 170 L 220 200 L 175 230 L 130 200 Z" fill="#c084fc" stroke="#000" strokeWidth="2"/>
+                                    <text x="175" y="205" textAnchor="middle" fontSize="10">B &lt; Min?</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 6 && (
+                                <>
+                                    <line x1="220" y1="200" x2="270" y2="200" stroke="#000" strokeWidth="2"/>
+                                    <line x1="270" y1="200" x2="270" y2="230" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <text x="235" y="195" fontSize="9" fontWeight="bold">Yes</text>
+                                    
+                                    <rect x="225" y="230" width="90" height="25" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="270" y="247" textAnchor="middle" fontSize="10">Min = B</text>
+                                    
+                                    <line x1="270" y1="255" x2="270" y2="280" stroke="#000" strokeWidth="2"/>
+                                    <line x1="270" y1="280" x2="175" y2="280" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 7 && (
+                                <>
+                                    <line x1="175" y1="230" x2="175" y2="280" stroke="#000" strokeWidth="2"/>
+                                    <text x="155" y="250" fontSize="9" fontWeight="bold">No</text>
+                                    
+                                    <circle cx="175" cy="280" r="8" fill="#fff" stroke="#000" strokeWidth="2"/>
+                                    <line x1="175" y1="288" x2="175" y2="310" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    
+                                    <path d="M 175 310 L 220 340 L 175 370 L 130 340 Z" fill="#c084fc" stroke="#000" strokeWidth="2"/>
+                                    <text x="175" y="345" textAnchor="middle" fontSize="10">C &lt; Min?</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 8 && (
+                                <>
+                                    <line x1="220" y1="340" x2="270" y2="340" stroke="#000" strokeWidth="2"/>
+                                    <line x1="270" y1="340" x2="270" y2="370" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <text x="235" y="335" fontSize="9" fontWeight="bold">Yes</text>
+                                    
+                                    <rect x="225" y="370" width="90" height="25" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="270" y="387" textAnchor="middle" fontSize="10">Min = C</text>
+                                    
+                                    <line x1="270" y1="395" x2="270" y2="410" stroke="#000" strokeWidth="2"/>
+                                    <line x1="270" y1="410" x2="175" y2="410" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 9 && (
+                                <>
+                                    <line x1="175" y1="370" x2="175" y2="410" stroke="#000" strokeWidth="2"/>
+                                    <text x="155" y="390" fontSize="9" fontWeight="bold">No</text>
+                                    
+                                    <circle cx="175" cy="410" r="8" fill="#fff" stroke="#000" strokeWidth="2"/>
+                                    <line x1="175" y1="418" x2="175" y2="435" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    
+                                    <path d="M 125 435 L 225 435 L 210 460 L 110 460 Z" fill="#93c5fd" stroke="#000" strokeWidth="2"/>
+                                    <text x="165" y="452" textAnchor="middle" fontSize="10">Print Min</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 10 && (
+                                <>
+                                    <line x1="175" y1="460" x2="175" y2="480" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <ellipse cx="175" cy="500" rx="35" ry="15" fill="#f87171" stroke="#000" strokeWidth="2"/>
+                                    <text x="175" y="505" textAnchor="middle" fontSize="12" fontWeight="bold">Stop</text>
+                                </>
+                            )}
+                        </svg>
+                    );
+                } else if (type === 'simple-loop') {
+                    return (
+                        <svg viewBox="0 0 350 420" className="w-full h-full">
+                            <defs>
+                                <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="2" orient="auto">
+                                    <polygon points="0 0, 6 2, 0 4" fill="#000"/>
+                                </marker>
+                            </defs>
+                            
+                            {revealedCount >= 1 && (
+                                <>
+                                    <ellipse cx="175" cy="30" rx="35" ry="15" fill="#4ade80" stroke="#000" strokeWidth="2"/>
+                                    <text x="175" y="35" textAnchor="middle" fontSize="12" fontWeight="bold">Start</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 3 && (
+                                <>
+                                    <line x1="175" y1="45" x2="175" y2="65" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <path d="M 125 65 L 225 65 L 210 95 L 110 95 Z" fill="#93c5fd" stroke="#000" strokeWidth="2"/>
+                                    <text x="165" y="85" textAnchor="middle" fontSize="11">Input n</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 4 && (
+                                <>
+                                    <line x1="175" y1="95" x2="175" y2="115" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <rect x="135" y="115" width="80" height="30" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="175" y="135" textAnchor="middle" fontSize="11">i = 1</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 5 && (
+                                <>
+                                    <line x1="175" y1="145" x2="175" y2="170" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <path d="M 175 170 L 220 200 L 175 230 L 130 200 Z" fill="#c084fc" stroke="#000" strokeWidth="2"/>
+                                    <text x="175" y="205" textAnchor="middle" fontSize="10">i > n?</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 6 && (
+                                <>
+                                    <line x1="175" y1="230" x2="175" y2="255" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <text x="185" y="245" fontSize="9" fontWeight="bold">No</text>
+                                    
+                                    <path d="M 135 255 L 215 255 L 200 285 L 120 285 Z" fill="#93c5fd" stroke="#000" strokeWidth="2"/>
+                                    <text x="165" y="275" textAnchor="middle" fontSize="10">Print i</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 7 && (
+                                <>
+                                    <line x1="175" y1="285" x2="175" y2="305" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <rect x="125" y="305" width="100" height="30" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="175" y="325" textAnchor="middle" fontSize="10">i = i + 1</text>
+                                    
+                                    <line x1="175" y1="335" x2="175" y2="350" stroke="#000" strokeWidth="2"/>
+                                    <line x1="175" y1="350" x2="270" y2="350" stroke="#000" strokeWidth="2"/>
+                                    <line x1="270" y1="350" x2="270" y2="200" stroke="#000" strokeWidth="2"/>
+                                    <line x1="270" y1="200" x2="220" y2="200" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 8 && (
+                                <>
+                                    <line x1="130" y1="200" x2="80" y2="200" stroke="#000" strokeWidth="2"/>
+                                    <line x1="80" y1="200" x2="80" y2="380" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <text x="105" y="195" fontSize="9" fontWeight="bold">Yes</text>
+                                    
+                                    <ellipse cx="80" cy="400" rx="35" ry="15" fill="#f87171" stroke="#000" strokeWidth="2"/>
+                                    <text x="80" y="405" textAnchor="middle" fontSize="12" fontWeight="bold">Stop</text>
+                                </>
+                            )}
+                        </svg>
+                    );
+                } else if (type === 'accumulator-loop') {
+                    return (
+                        <svg viewBox="0 0 350 510" className="w-full h-full">
+                            <defs>
+                                <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="2" orient="auto">
+                                    <polygon points="0 0, 6 2, 0 4" fill="#000"/>
+                                </marker>
+                            </defs>
+                            
+                            {revealedCount >= 1 && (
+                                <>
+                                    <ellipse cx="175" cy="25" rx="35" ry="15" fill="#4ade80" stroke="#000" strokeWidth="2"/>
+                                    <text x="175" y="30" textAnchor="middle" fontSize="12" fontWeight="bold">Start</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 3 && (
+                                <>
+                                    <line x1="175" y1="40" x2="175" y2="60" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <path d="M 130 60 L 220 60 L 205 88 L 115 88 Z" fill="#93c5fd" stroke="#000" strokeWidth="2"/>
+                                    <text x="165" y="79" textAnchor="middle" fontSize="11">Input n</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 4 && (
+                                <>
+                                    <line x1="175" y1="88" x2="175" y2="105" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <rect x="125" y="105" width="100" height="28" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="175" y="124" textAnchor="middle" fontSize="11">sum = 0</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 5 && (
+                                <>
+                                    <line x1="175" y1="133" x2="175" y2="150" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <rect x="135" y="150" width="80" height="28" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="175" y="169" textAnchor="middle" fontSize="11">i = 1</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 6 && (
+                                <>
+                                    <line x1="175" y1="178" x2="175" y2="200" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <path d="M 175 200 L 220 230 L 175 260 L 130 230 Z" fill="#c084fc" stroke="#000" strokeWidth="2"/>
+                                    <text x="175" y="235" textAnchor="middle" fontSize="10">i > n?</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 7 && (
+                                <>
+                                    <line x1="175" y1="260" x2="175" y2="285" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <text x="185" y="275" fontSize="9" fontWeight="bold">No</text>
+                                    
+                                    <rect x="105" y="285" width="140" height="28" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="175" y="304" textAnchor="middle" fontSize="10">sum = sum + i</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 8 && (
+                                <>
+                                    <line x1="175" y1="313" x2="175" y2="330" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <rect x="125" y="330" width="100" height="28" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="175" y="349" textAnchor="middle" fontSize="10">i = i + 1</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 9 && (
+                                <>
+                                    <line x1="175" y1="358" x2="175" y2="375" stroke="#000" strokeWidth="2"/>
+                                    <line x1="175" y1="375" x2="280" y2="375" stroke="#000" strokeWidth="2"/>
+                                    <line x1="280" y1="375" x2="280" y2="230" stroke="#000" strokeWidth="2"/>
+                                    <line x1="280" y1="230" x2="220" y2="230" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 10 && (
+                                <>
+                                    <line x1="130" y1="230" x2="70" y2="230" stroke="#000" strokeWidth="2"/>
+                                    <line x1="70" y1="230" x2="70" y2="420" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <text x="105" y="225" fontSize="9" fontWeight="bold">Yes</text>
+                                    
+                                    <path d="M 30 420 L 110 420 L 95 448 L 15 448 Z" fill="#93c5fd" stroke="#000" strokeWidth="2"/>
+                                    <text x="60" y="439" textAnchor="middle" fontSize="10">Print sum</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 11 && (
+                                <>
+                                    <line x1="70" y1="448" x2="70" y2="465" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <ellipse cx="70" cy="482" rx="35" ry="15" fill="#f87171" stroke="#000" strokeWidth="2"/>
+                                    <text x="70" y="487" textAnchor="middle" fontSize="12" fontWeight="bold">Stop</text>
+                                </>
+                            )}
+                        </svg>
+                    );
+                } else if (type === 'conditional-loop' || type === 'counter-loop' || type === 'multiplication-loop') {
+                    const isConditional = type === 'conditional-loop';
+                    const isCounter = type === 'counter-loop';
+                    const isMult = type === 'multiplication-loop';
+                    
+                    return (
+                        <svg viewBox="0 0 350 550" className="w-full h-full">
+                            <defs>
+                                <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="2" orient="auto">
+                                    <polygon points="0 0, 6 2, 0 4" fill="#000"/>
+                                </marker>
+                            </defs>
+                            
+                            {revealedCount >= 1 && (
+                                <>
+                                    <ellipse cx="175" cy="25" rx="35" ry="15" fill="#4ade80" stroke="#000" strokeWidth="2"/>
+                                    <text x="175" y="30" textAnchor="middle" fontSize="12" fontWeight="bold">Start</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 3 && (
+                                <>
+                                    <line x1="175" y1="40" x2="175" y2="60" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <path d="M 130 60 L 220 60 L 205 88 L 115 88 Z" fill="#93c5fd" stroke="#000" strokeWidth="2"/>
+                                    <text x="165" y="79" textAnchor="middle" fontSize="11">Input n</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 4 && (
+                                <>
+                                    <line x1="175" y1="88" x2="175" y2="105" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <rect x="115" y="105" width="120" height="28" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="175" y="124" textAnchor="middle" fontSize="10">
+                                        {isConditional ? 'term = 1' : isCounter ? 'term = 1' : isMult ? 'fact = 1' : 'term = 1'}
+                                    </text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 5 && (
+                                <>
+                                    <line x1="175" y1="133" x2="175" y2="150" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <rect x="125" y="150" width="100" height="28" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="175" y="169" textAnchor="middle" fontSize="11">
+                                        {isConditional ? 'sum = 0' : isCounter ? 'sum = 0' : 'i = 1'}
+                                    </text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 6 && isCounter && (
+                                <>
+                                    <line x1="175" y1="178" x2="175" y2="195" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <rect x="135" y="195" width="80" height="28" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="175" y="214" textAnchor="middle" fontSize="11">i = 1</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 6 && (
+                                <>
+                                    <line x1="175" y1={isCounter ? "223" : isMult ? "178" : "178"} x2="175" y2={isCounter ? "245" : isMult ? "200" : "200"} stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <path d={`M 175 ${isCounter ? "245" : "200"} L 220 ${isCounter ? "275" : "230"} L 175 ${isCounter ? "305" : "260"} L 130 ${isCounter ? "275" : "230"} Z`} fill="#c084fc" stroke="#000" strokeWidth="2"/>
+                                    <text x="175" y={isCounter ? "280" : "235"} textAnchor="middle" fontSize="9">
+                                        {isConditional ? 'term ≥ n?' : isCounter ? 'i > n?' : 'i > n?'}
+                                    </text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 7 && (
+                                <>
+                                    <line x1="175" y1={isCounter ? "305" : "260"} x2="175" y2={isCounter ? "330" : "285"} stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <text x="185" y={isCounter ? "320" : "275"} fontSize="9" fontWeight="bold">No</text>
+                                    
+                                    <rect x="95" y={isCounter ? "330" : "285"} width="160" height="28" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="175" y={isCounter ? "349" : "304"} textAnchor="middle" fontSize="9">
+                                        {isConditional ? 'sum = sum + term' : isCounter ? 'sum = sum + term' : 'fact = fact × i'}
+                                    </text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 8 && (
+                                <>
+                                    <line x1="175" y1={isCounter ? "358" : "313"} x2="175" y2={isCounter ? "375" : "330"} stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <rect x="105" y={isCounter ? "375" : "330"} width="140" height="28" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="175" y={isCounter ? "394" : "349"} textAnchor="middle" fontSize="9">
+                                        {isConditional ? 'term = term + 3' : isCounter ? 'term = term + 3' : 'i = i + 1'}
+                                    </text>
+                                </>
+                            )}
+                            
+                            {(revealedCount >= 9 && isCounter) && (
+                                <>
+                                    <line x1="175" y1="403" x2="175" y2="420" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <rect x="125" y="420" width="100" height="28" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="175" y="439" textAnchor="middle" fontSize="10">i = i + 1</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 9 && (
+                                <>
+                                    <line x1="175" y1={isCounter ? "448" : "358"} x2="175" y2={isCounter ? "465" : "375"} stroke="#000" strokeWidth="2"/>
+                                    <line x1="175" y1={isCounter ? "465" : "375"} x2="290" y2={isCounter ? "465" : "375"} stroke="#000" strokeWidth="2"/>
+                                    <line x1="290" y1={isCounter ? "465" : "375"} x2="290" y2={isCounter ? "275" : "230"} stroke="#000" strokeWidth="2"/>
+                                    <line x1="290" y1={isCounter ? "275" : "230"} x2="220" y2={isCounter ? "275" : "230"} stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 10 && (
+                                <>
+                                    <line x1="130" y1={isCounter ? "275" : "230"} x2="60" y2={isCounter ? "275" : "230"} stroke="#000" strokeWidth="2"/>
+                                    <line x1="60" y1={isCounter ? "275" : "230"} x2="60" y2="450" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <text x="105" y={isCounter ? "270" : "225"} fontSize="9" fontWeight="bold">Yes</text>
+                                    
+                                    <path d="M 15 450 L 105 450 L 90 478 L 0 478 Z" fill="#93c5fd" stroke="#000" strokeWidth="2"/>
+                                    <text x="52" y="469" textAnchor="middle" fontSize="10">
+                                        {isMult ? 'Print fact' : 'Print sum'}
+                                    </text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 11 && (
+                                <>
+                                    <line x1="60" y1="478" x2="60" y2="495" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <ellipse cx="60" cy="513" rx="35" ry="15" fill="#f87171" stroke="#000" strokeWidth="2"/>
+                                    <text x="60" y="518" textAnchor="middle" fontSize="12" fontWeight="bold">Stop</text>
+                                </>
+                            )}
+                        </svg>
+                    );
+                } else if (type === 'calculation-decision') {
+                    return (
+                        <svg viewBox="0 0 400 565" className="w-full h-full">
+                            <defs>
+                                <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="2" orient="auto">
+                                    <polygon points="0 0, 6 2, 0 4" fill="#000"/>
+                                </marker>
+                            </defs>
+                            
+                            {revealedCount >= 1 && (
+                                <>
+                                    <ellipse cx="200" cy="25" rx="35" ry="15" fill="#4ade80" stroke="#000" strokeWidth="2"/>
+                                    <text x="200" y="30" textAnchor="middle" fontSize="12" fontWeight="bold">Start</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 3 && (
+                                <>
+                                    <line x1="200" y1="40" x2="200" y2="58" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <rect x="110" y="58" width="180" height="26" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="200" y="76" textAnchor="middle" fontSize="9">costPerCredit = 8250</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 4 && (
+                                <>
+                                    <line x1="200" y1="84" x2="200" y2="100" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <rect x="110" y="100" width="180" height="26" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="200" y="118" textAnchor="middle" fontSize="9">semesterFee = 9350</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 5 && (
+                                <>
+                                    <line x1="200" y1="126" x2="200" y2="145" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <path d="M 120 145 L 280 145 L 265 172 L 105 172 Z" fill="#93c5fd" stroke="#000" strokeWidth="2"/>
+                                    <text x="190" y="163" textAnchor="middle" fontSize="10">Input credits, CGPA</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 6 && (
+                                <>
+                                    <line x1="200" y1="172" x2="200" y2="190" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <rect x="85" y="190" width="230" height="26" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="200" y="208" textAnchor="middle" fontSize="9">tuition = credits × costPerCredit</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 7 && (
+                                <>
+                                    <line x1="200" y1="216" x2="200" y2="234" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <rect x="95" y="234" width="210" height="26" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="200" y="252" textAnchor="middle" fontSize="9">total = tuition + semesterFee</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 8 && (
+                                <>
+                                    <line x1="200" y1="260" x2="200" y2="285" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <path d="M 200 285 L 250 315 L 200 345 L 150 315 Z" fill="#c084fc" stroke="#000" strokeWidth="2"/>
+                                    <text x="200" y="320" textAnchor="middle" fontSize="10">CGPA ≥ 3.5?</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 9 && (
+                                <>
+                                    <line x1="250" y1="315" x2="310" y2="315" stroke="#000" strokeWidth="2"/>
+                                    <line x1="310" y1="315" x2="310" y2="345" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <text x="265" y="310" fontSize="9" fontWeight="bold">Yes</text>
+                                    
+                                    <rect x="235" y="345" width="150" height="24" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="310" y="361" textAnchor="middle" fontSize="8">discount = 0.25 × total</text>
+                                    
+                                    <line x1="310" y1="369" x2="310" y2="385" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    
+                                    <rect x="225" y="385" width="170" height="24" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="310" y="401" textAnchor="middle" fontSize="8">total = total - discount</text>
+                                    
+                                    <line x1="310" y1="409" x2="310" y2="460" stroke="#000" strokeWidth="2"/>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 10 && (
+                                <>
+                                    <line x1="150" y1="315" x2="90" y2="315" stroke="#000" strokeWidth="2"/>
+                                    <line x1="90" y1="315" x2="90" y2="385" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <text x="125" y="310" fontSize="9" fontWeight="bold">No</text>
+                                    
+                                    <rect x="30" y="385" width="120" height="24" fill="#fbbf24" stroke="#000" strokeWidth="2" rx="2"/>
+                                    <text x="90" y="401" textAnchor="middle" fontSize="9">discount = 0</text>
+                                    
+                                    <line x1="90" y1="409" x2="90" y2="460" stroke="#000" strokeWidth="2"/>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 11 && (
+                                <>
+                                    <line x1="90" y1="460" x2="200" y2="460" stroke="#000" strokeWidth="2"/>
+                                    <line x1="310" y1="460" x2="200" y2="460" stroke="#000" strokeWidth="2"/>
+                                    <circle cx="200" cy="460" r="8" fill="#fff" stroke="#000" strokeWidth="2"/>
+                                    <line x1="200" y1="468" x2="200" y2="485" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    
+                                    <path d="M 155 485 L 245 485 L 230 510 L 140 510 Z" fill="#93c5fd" stroke="#000" strokeWidth="2"/>
+                                    <text x="195" y="502" textAnchor="middle" fontSize="10">Print total</text>
+                                </>
+                            )}
+                            
+                            {revealedCount >= 12 && (
+                                <>
+                                    <line x1="200" y1="510" x2="200" y2="527" stroke="#000" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                                    <ellipse cx="200" cy="545" rx="35" ry="15" fill="#f87171" stroke="#000" strokeWidth="2"/>
+                                    <text x="200" y="550" textAnchor="middle" fontSize="12" fontWeight="bold">Stop</text>
+                                </>
+                            )}
+                        </svg>
+                    );
+                }
+                
+                return null;
+            };
+
+            const slide = slides[currentSlide];
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex flex-col items-center justify-center p-4">
+                    <div className="bg-white rounded-xl shadow-2xl h-full flex flex-col" style={{ width: '1280px', height: '720px', maxWidth: '95vw', maxHeight: '95vh' }}>
+                        
+                        <div className="flex-1 overflow-auto p-6">
+                            {slide.type === 'title' && (
+                                <div className="h-full flex flex-col items-center justify-center text-center space-y-5">
+                                    <div className="text-blue-600 font-bold text-xl">{slide.content.courseCode}</div>
+                                    <div className="text-2xl font-semibold text-gray-700">{slide.content.courseTitle}</div>
+                                    <div className="text-5xl font-bold text-gray-900 mt-6">{slide.content.topic}</div>
+                                    <div className="text-3xl font-semibold text-purple-600 mt-2">{slide.content.subtitle}</div>
+                                    <div className="mt-10 text-lg text-gray-600">Prepared by: {slide.content.faculty}</div>
+                                </div>
+                            )}
+
+                            {slide.type === 'thankyou' && (
+                                <div className="flex flex-col items-center justify-center h-full text-center">
+                                    <h1 className="text-9xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                                        Thank You
+                                    </h1>
+                                    <p className="text-2xl text-gray-600 mt-8">Keep Practicing!</p>
+                                </div>
+                            )}
+
+                            {slide.type === 'problem' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-2xl font-bold text-blue-900 mb-3 border-b-4 border-blue-500 pb-2">
+                                        Problem {slide.number}: {slide.title}
+                                    </h2>
+                                    
+                                    <div className="flex-1 grid grid-cols-2 gap-4 min-h-0">
+                                        {/* Left Panel: Problem Description + Algorithm */}
+                                        <div className="flex flex-col min-h-0 space-y-3">
+                                            {/* Problem Description */}
+                                            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 border-2 border-blue-300">
+                                                <h3 className="text-sm font-bold text-blue-800 mb-2">Problem Statement:</h3>
+                                                <p className="text-sm text-gray-700">{slide.description}</p>
+                                                {slide.rules && (
+                                                    <div className="mt-2 space-y-1">
+                                                        {slide.rules.map((rule, idx) => (
+                                                            <div key={idx} className="text-xs text-gray-600 flex items-start">
+                                                                <span className="text-blue-600 mr-2">•</span>
+                                                                <span>{rule}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            
+                                            {/* Algorithm */}
+                                            <div className="flex-1 flex flex-col min-h-0">
+                                                <h3 className="text-lg font-semibold text-purple-700 mb-2">Algorithm</h3>
+                                                <div className="flex-1 bg-gray-50 rounded-lg p-3 border-2 border-purple-300 overflow-auto">
+                                                    <div className="space-y-1.5">
+                                                        {slide.algorithm.map((step, idx) => (
+                                                            <div key={idx} className="flex items-start space-x-2">
+                                                                <button onClick={() => toggleStep(currentSlide, idx)}
+                                                                        className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-purple-500 hover:bg-purple-600 text-white flex items-center justify-center text-xs transition-all">
+                                                                    {revealedSteps[`${currentSlide}-${idx}`] ? <Eye /> : <EyeOff />}
+                                                                </button>
+                                                                <div className={`flex-1 transition-all duration-500 ${
+                                                                    (() => {
+                                                                        const flowchartSteps = {
+                                                                            'nested-decision': 11,
+                                                                            'sequential-decision': 10,
+                                                                            'simple-loop': 8,
+                                                                            'accumulator-loop': 11,
+                                                                            'calculation-decision': 12,
+                                                                            'conditional-loop': 11,
+                                                                            'counter-loop': 9,
+                                                                            'multiplication-loop': 9
+                                                                        };
+                                                                        const flowchartStepCount = flowchartSteps[slide.flowchartType] || 10;
+                                                                        const slideKey = `slide-${currentSlide}`;
+                                                                        const currentCounter = revealCounter[slideKey] || 0;
+                                                                        const shouldShow = currentCounter > flowchartStepCount + idx;
+                                                                        return shouldShow ? 'opacity-100 transform translate-x-0' : 'opacity-0 transform -translate-x-4';
+                                                                    })()
+                                                                }`}>
+                                                                    <div className="flex items-start">
+                                                                        <span className="font-bold text-purple-700 mr-2 text-xs whitespace-nowrap">
+                                                                            Step {idx + 1}:
+                                                                        </span>
+                                                                        <span className="text-gray-800 text-xs leading-relaxed">{step}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Right Panel: Flowchart */}
+                                        <div className="flex flex-col min-h-0">
+                                            <h3 className="text-lg font-semibold text-green-700 mb-2">Flowchart</h3>
+                                            <div className="flex-1 bg-gray-50 rounded-lg p-3 border-2 border-green-300 flex items-center justify-center overflow-auto">
+                                                {renderFlowchart(slide.flowchartType, currentSlide)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<FlowchartPresentation />);
+    </script>
+</body>
+</html>
