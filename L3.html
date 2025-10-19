@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basics of C Programming - EEE 103 L3</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        }
+        .code-line {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const Eye = () => (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        );
+
+        const EyeOff = () => (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+        );
+
+        const CPresentation = () => {
+            const [currentSlide, setCurrentSlide] = useState(0);
+            const [revealedSteps, setRevealedSteps] = useState({});
+
+            const slides = [
+                {
+                    type: 'title',
+                    content: {
+                        courseCode: 'EEE: 103',
+                        courseTitle: 'Computer Programming',
+                        topic: 'L3: Basics of C programming',
+                        faculty: 'Sk Tahmed Salim Rafid'
+                    }
+                },
+                {
+                    type: 'code-annotated',
+                    title: 'First C Program',
+                    code: [
+                        '#include <stdio.h>',
+                        '/* This is my first program.',
+                        'This section is multi line comments*/',
+                        'void main(){',
+                        '    // Printing a welcome message',
+                        '    printf("Welcome to EEE-103");',
+                        '}'
+                    ],
+                    output: 'Welcome to EEE-103',
+                    revealGroups: [[0], [1,2], [3,6], [4], [5]],
+                    annotations: [
+                        { line: 0, label: 'Preprocessor', color: 'pink' },
+                        { line: 3, label: 'void = Return Type, main = Function', color: 'blue' },
+                        { line: 3, label: 'Scope: { to }', color: 'purple' },
+                        { line: 5, label: 'printf = Function', color: 'yellow' }
+                    ]
+                },
+                {
+                    type: 'explanation',
+                    title: 'Understanding C Program Components',
+                    sections: [
+                        { subtitle: 'Preprocessor', content: 'Begins with #. Header files end with .h. The header stdio.h is used for input/output operations as how the input/output works. Relevant functions are defined in stdio.h' },
+                        { subtitle: 'Scope', content: 'Scope is defined from one opening brace { to its closing brace }. Everything inside these braces belongs to that scope.' },
+                        { subtitle: 'Main Function', content: 'In C when we run a code, it looks for main function and the lines in main function are executed sequentially.' },
+                        { subtitle: 'Comments', content: 'Comments are lines that are not executed. Comments are for programmers to understand what the code means or what a line means.' }
+                    ]
+                },
+                {
+                    type: 'concept',
+                    title: 'Variables - What are Variables?',
+                    points: [
+                        'Variables are used to store data in memory',
+                        'We can store different types of data like int, float, char etc.',
+                        'Variables can be declared and used to store data and read data',
+                        'Variables must be declared before use',
+                        'Example: Think of variables as labeled boxes where you store values'
+                    ]
+                },
+                {
+                    type: 'variable-declaration',
+                    title: 'How to Declare Variables?',
+                    dataTypes: [
+                        { type: 'int', desc: 'Whole number', example: 'int x = 103;' },
+                        { type: 'float', desc: 'Floating point / fraction', example: 'float y = 10.5;' },
+                        { type: 'double', desc: 'Float but more precision', example: 'double z = 3.14159;' },
+                        { type: 'char', desc: 'Single character', example: "char c = 'a';" }
+                    ],
+                    scenario: {
+                        text: "Let's assume we will store 103. It's a whole number. So we need one storage that can store int.",
+                        solution: 'int x = 103;'
+                    }
+                },
+                {
+                    type: 'variable-examples',
+                    title: 'How to Declare Variables? (Contd.)',
+                    examples: [
+                        { code: 'int x = 10;', valid: true, note: 'Valid - integer value' },
+                        { code: 'int x = 10.3;', valid: false, note: 'Invalid - float can\'t be stored in int due to bit limitation' },
+                        { code: 'float x = 10.3;', valid: true, note: 'Valid - float value' },
+                        { code: 'float x = 10;', valid: true, note: 'Valid - 10 will be converted to 10.0' },
+                        { code: "char x = 'a';", valid: true, note: 'Valid - single character' }
+                    ]
+                },
+                {
+                    type: 'naming-rules',
+                    title: 'Variable Naming Rules',
+                    rules: [
+                        'Case sensitive (myVar and myvar are different)',
+                        'Can have letters, numbers and underscore (_)',
+                        'No comma/space allowed',
+                        'First character can\'t be a number, but underscore (_) is valid',
+                        'Variable names should be meaningful'
+                    ],
+                    conventions: [
+                        'Snake case: my_name, student_id',
+                        'Camel case: myName, studentId'
+                    ]
+                },
+                {
+                    type: 'naming-examples',
+                    title: 'Variable Naming Rules (Contd.)',
+                    validExamples: [
+                        'int courseCode;',
+                        'float _temperature;',
+                        'int student1;',
+                        'char my_grade;',
+                        'int totalMarks;'
+                    ],
+                    invalidExamples: [
+                        { code: 'int 1student;', reason: 'Starts with number' },
+                        { code: 'float my marks;', reason: 'Contains space' },
+                        { code: 'int student,id;', reason: 'Contains comma' },
+                        { code: 'char for;', reason: 'Reserved keyword' },
+                        { code: 'int @price;', reason: 'Special character not allowed' }
+                    ]
+                },
+                {
+                    type: 'keywords',
+                    title: 'Reserved Keywords in C',
+                    description: 'These keywords are reserved and CANNOT be used as variable names!',
+                    keywords: [
+                        ['auto', 'break', 'case', 'char', 'const'],
+                        ['continue', 'default', 'do', 'double', 'else'],
+                        ['enum', 'extern', 'float', 'for', 'goto'],
+                        ['if', 'int', 'long', 'register', 'return'],
+                        ['short', 'signed', 'sizeof', 'static', 'struct'],
+                        ['switch', 'typedef', 'union', 'unsigned', 'void'],
+                        ['volatile', 'while', '', '', '']
+                    ]
+                },
+                {
+                    type: 'code-with-output',
+                    title: 'Printing Variable',
+                    description: 'Using %d to print integer variable',
+                    code: [
+                        '#include <stdio.h>',
+                        '/* This is my 2nd program.',
+                        'Here I will store the course code in a variable',
+                        'Finally I will print them*/',
+                        'void main(){',
+                        '    int courseCode = 103;',
+                        '    printf("Welcome to EEE-%d",courseCode);',
+                        '}'
+                    ],
+                    output: 'Welcome to EEE-103',
+                    revealGroups: [[0], [1,2,3], [4,7], [5], [6]]
+                },
+                {
+                    type: 'code-with-output',
+                    title: 'Printing Multiple Variables',
+                    description: 'Using multiple format specifiers',
+                    code: [
+                        '#include <stdio.h>',
+                        '/* This is my 3rd program.',
+                        'Here I will store the course code and section variables',
+                        'Finally I will print them*/',
+                        'void main(){',
+                        '    int courseCode = 103;',
+                        '    int sec = 2;',
+                        '    printf("Welcome to EEE-%d Section-%d",courseCode,sec);',
+                        '}'
+                    ],
+                    output: 'Welcome to EEE-103 Section-2',
+                    revealGroups: [[0], [1,2,3], [4,8], [5], [6], [7]]
+                },
+                {
+                    type: 'modifiers',
+                    title: 'Modifiers & Format Specifiers',
+                    modifiers: {
+                        title: 'What are Modifiers?',
+                        desc: 'In case we need more space for data storage or we know that data will be unsigned, we can use modifiers:',
+                        examples: [
+                            { code: 'long int x = 1000000;', note: 'Use of long makes range from 4 byte to 8 byte' },
+                            { code: 'unsigned int y = 5000;', note: 'Gives bigger range but no negative numbers' }
+                        ]
+                    },
+                    specifiers: {
+                        title: 'Format Specifiers for Printing/Input',
+                        list: [
+                            { type: 'int', specifier: '%d', note: 'For integer values' },
+                            { type: 'float', specifier: '%f', note: 'For floating point values' },
+                            { type: '', specifier: '%.2f', note: 'After decimal 2 digits will be shown' },
+                            { type: 'char', specifier: '%c', note: 'For character values' }
+                        ]
+                    }
+                },
+                {
+                    type: 'scanf-explanation',
+                    title: 'Taking Input - scanf()',
+                    explanation: [
+                        'scanf() is used to take input from the user',
+                        'Syntax: scanf("specifier", &variableName);',
+                        'The & (ampersand) is MANDATORY',
+                        'When we write variableName, we get the value stored in that variable',
+                        'But we want to access the location and store data in that variable',
+                        'To access the location, we use & operator'
+                    ],
+                    example: {
+                        code: 'scanf("%d", &courseCode);',
+                        note: '& gives the memory address of the variable'
+                    }
+                },
+                {
+                    type: 'code-with-output',
+                    title: 'Taking Input and Printing',
+                    description: 'Reading course code from user',
+                    code: [
+                        '#include <stdio.h>',
+                        '',
+                        'void main(){',
+                        '    int courseCode;',
+                        '    printf("Enter the course code:");',
+                        '    scanf("%d", &courseCode);',
+                        '    printf("Welcome to EEE-%d",courseCode);',
+                        '}'
+                    ],
+                    output: 'Enter the course code: 103\nWelcome to EEE-103',
+                    revealGroups: [[0], [1,2,7], [3], [4], [5], [6]]
+                },
+                {
+                    type: 'operators-bitwise',
+                    title: 'Operations in C',
+                    leftSection: {
+                        title: 'Arithmetic Operators',
+                        ops: [
+                            { symbol: '+', name: 'Addition' },
+                            { symbol: '-', name: 'Subtraction' },
+                            { symbol: '*', name: 'Multiplication' },
+                            { symbol: '/', name: 'Division' },
+                            { symbol: '%', name: 'Modulus (Remainder)' },
+                            { symbol: '++', name: 'Increment by 1' },
+                            { symbol: '--', name: 'Decrement by 1' }
+                        ]
+                    },
+                    rightSection: {
+                        title: 'Bitwise Operators',
+                        subtitle: 'Example: a = 0b1010 (10), b = 0b1011 (11)',
+                        ops: [
+                            { symbol: '&', name: 'AND', example: 'a & b = 0b1010 (10)' },
+                            { symbol: '|', name: 'OR', example: 'a | b = 0b1011 (11)' },
+                            { symbol: '^', name: 'XOR', example: 'a ^ b = 0b0001 (1)' },
+                            { symbol: '~', name: "1's complement", example: '~a = 0b0101 (inverted)' },
+                            { symbol: '<<', name: 'Left shift', example: 'a << 1 = 0b10100 (20)' },
+                            { symbol: '>>', name: 'Right shift', example: 'a >> 1 = 0b0101 (5)' }
+                        ]
+                    }
+                },
+                {
+                    type: 'assignment-operators',
+                    title: 'Assignment Operators',
+                    leftExamples: [
+                        { code: 'a = 10;', desc: 'Assign a\'s value as 10' },
+                        { code: 'a += 20;', desc: 'This means a = a + 20\n// a already has 10, so a becomes 30' },
+                        { code: 'a++;', desc: 'This means a = a + 1\n// so a becomes 31' }
+                    ],
+                    rightExamples: [
+                        { code: 'printf("Value of a is %d", a++);', desc: 'Output: 31\n// But due to ++, value of a is updated to 32\n// Print shows 31 (post-increment)' },
+                        { code: 'a = 20;\nprintf("Value of a is %d", ++a);', desc: 'Output: 21\n// ++a means increment first then work\n// (pre-increment)' }
+                    ]
+                },
+                {
+                    type: 'code-with-output',
+                    title: 'Example: Area of Rectangle',
+                    description: 'Calculate area using length and width',
+                    code: [
+                        '#include <stdio.h>',
+                        
+                        'void main() {',
+                        '    float length, width, area;',
+                        
+                        '    // Input length and width from user',
+                        '    printf("Enter the length of the rectangle: ");',
+                        '    scanf("%f", &length);',
+                        
+                        '    printf("Enter the width of the rectangle: ");',
+                        '    scanf("%f", &width);',
+                        
+       
+                        '    area = length * width;',
+                        
+   
+                        '    printf("The area of the rectangle is: %.2f\\n", area);',
+                        '}'
+                    ],
+                    output: 'Enter the length: 5.5\nEnter the width: 3.2\nThe area is: 17.60',
+                    revealGroups: [[0], [1,10],[2], [3,4,5], [6,7], [8],[9]]
+                },
+                {
+                    type: 'practice',
+                    title: 'Practice Problems',
+                    problems: [
+ 
+                        'Question 1: Write a program to convert feet to centimeters (1 foot = 30.48 cm)',
+                        'Question 2: Write a program to calculate the sum of two numbers entered by user',
+                        'Question 3: Write a program to find the average of three numbers',
+                        'Question 4: Write a program to convert temperature from Celsius to Fahrenheit',
+                        'Question 5: Write a program to calculate the area of a circle (Area = π × r²)',
+                    ]
+                },
+                {
+                    type: 'thankyou'
+                }
+            ];
+
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === 'b' || e.key === 'B') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        const newRevealed = { ...revealedSteps };
+                        
+                        if (slide.type === 'concept') {
+                            for (let i = 0; i < slide.points.length; i++) {
+                                newRevealed[`${currentSlide}-${i}`] = true;
+                            }
+                        } else if (slide.type === 'code-annotated' || slide.type === 'code-with-output') {
+                            for (let i = 0; i < slide.revealGroups.length; i++) {
+                                newRevealed[`${currentSlide}-${i}`] = true;
+                            }
+                        } else if (slide.type === 'explanation') {
+                            for (let i = 0; i < slide.sections.length; i++) {
+                                newRevealed[`${currentSlide}-${i}`] = true;
+                            }
+                        } else if (slide.type === 'keywords') {
+                            for (let i = 0; i < slide.keywords.length; i++) {
+                                newRevealed[`${currentSlide}-${i}`] = true;
+                            }
+                        }
+                        
+                        setRevealedSteps(newRevealed);
+                    } else if (e.key === 'Tab') {
+                        e.preventDefault();
+                        if (currentSlide < slides.length - 1) {
+                            setCurrentSlide(prev => prev + 1);
+                            setRevealedSteps({});
+                        }
+                    } else if (e.key === 'ArrowRight') {
+                        setCurrentSlide(prev => Math.min(slides.length - 1, prev + 1));
+                        setRevealedSteps({});
+                    } else if (e.key === 'ArrowLeft') {
+                        setCurrentSlide(prev => Math.max(0, prev - 1));
+                        setRevealedSteps({});
+                    } else if (e.key === 'ArrowDown' || e.key === ' ') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        
+                        if (slide.type === 'title' || slide.type === 'thankyou' || slide.type === 'variable-declaration' || 
+                            slide.type === 'naming-rules' || slide.type === 'modifiers' || slide.type === 'scanf-explanation' ||
+                            slide.type === 'operators-bitwise' || slide.type === 'assignment-operators' || 
+                            slide.type === 'variable-examples' || slide.type === 'naming-examples' || slide.type === 'practice') {
+                            if (currentSlide < slides.length - 1) {
+                                setCurrentSlide(prev => prev + 1);
+                                setRevealedSteps({});
+                            }
+                            return;
+                        }
+                        
+                        let totalSteps = 0;
+                        if (slide.type === 'concept') totalSteps = slide.points.length;
+                        else if (slide.type === 'code-annotated' || slide.type === 'code-with-output') totalSteps = slide.revealGroups.length;
+                        else if (slide.type === 'explanation') totalSteps = slide.sections.length;
+                        else if (slide.type === 'keywords') totalSteps = slide.keywords.length;
+                        
+                        let allRevealed = true;
+                        for (let i = 0; i < totalSteps; i++) {
+                            if (!revealedSteps[`${currentSlide}-${i}`]) {
+                                allRevealed = false;
+                                break;
+                            }
+                        }
+                        
+                        if (allRevealed && totalSteps > 0) {
+                            if (currentSlide < slides.length - 1) {
+                                setCurrentSlide(prev => prev + 1);
+                                setRevealedSteps({});
+                            }
+                        } else {
+                            for (let i = 0; i < totalSteps; i++) {
+                                if (!revealedSteps[`${currentSlide}-${i}`]) {
+                                    setRevealedSteps(prev => ({ ...prev, [`${currentSlide}-${i}`]: true }));
+                                    break;
+                                }
+                            }
+                        }
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        
+                        if (slide.type === 'title' || slide.type === 'thankyou' || slide.type === 'variable-declaration' || 
+                            slide.type === 'naming-rules' || slide.type === 'modifiers' || slide.type === 'scanf-explanation' ||
+                            slide.type === 'operators-bitwise' || slide.type === 'assignment-operators' ||
+                            slide.type === 'variable-examples' || slide.type === 'naming-examples' || slide.type === 'practice') {
+                            if (currentSlide > 0) {
+                                setCurrentSlide(prev => prev - 1);
+                                setRevealedSteps({});
+                            }
+                            return;
+                        }
+                        
+                        let totalSteps = 0;
+                        if (slide.type === 'concept') totalSteps = slide.points.length;
+                        else if (slide.type === 'code-annotated' || slide.type === 'code-with-output') totalSteps = slide.revealGroups.length;
+                        else if (slide.type === 'explanation') totalSteps = slide.sections.length;
+                        else if (slide.type === 'keywords') totalSteps = slide.keywords.length;
+                        
+                        let anyRevealed = false;
+                        for (let i = 0; i < totalSteps; i++) {
+                            if (revealedSteps[`${currentSlide}-${i}`]) {
+                                anyRevealed = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!anyRevealed && currentSlide > 0) {
+                            setCurrentSlide(prev => prev - 1);
+                            setRevealedSteps({});
+                            return;
+                        }
+                        
+                        for (let i = totalSteps - 1; i >= 0; i--) {
+                            if (revealedSteps[`${currentSlide}-${i}`]) {
+                                const newRevealed = { ...revealedSteps };
+                                delete newRevealed[`${currentSlide}-${i}`];
+                                setRevealedSteps(newRevealed);
+                                break;
+                            }
+                        }
+                    }
+                };
+
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [currentSlide, revealedSteps, slides]);
+
+            const toggleStep = (slideIdx, stepIdx) => {
+                const key = `${slideIdx}-${stepIdx}`;
+                setRevealedSteps(prev => ({ ...prev, [key]: !prev[key] }));
+            };
+
+            const slide = slides[currentSlide];
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex flex-col items-center justify-center p-4">
+                    <div className="bg-white rounded-xl shadow-2xl h-full flex flex-col" style={{ width: '1280px', height: '720px', maxWidth: '95vw', maxHeight: '95vh' }}>
+                        
+                        <div className="flex-1 overflow-auto p-8">
+                            {slide.type === 'title' && (
+                                <div className="h-full flex flex-col items-center justify-center text-center space-y-6">
+                                    <div className="text-blue-600 font-bold text-2xl">{slide.content.courseCode}</div>
+                                    <div className="text-3xl font-semibold text-gray-700">{slide.content.courseTitle}</div>
+                                    <div className="text-6xl font-bold text-gray-900 mt-8">{slide.content.topic}</div>
+                                    <div className="mt-12 text-xl text-gray-600">Prepared by: {slide.content.faculty}</div>
+                                </div>
+                            )}
+
+                            {slide.type === 'thankyou' && (
+                                <div className="flex flex-col items-center justify-center h-full text-center">
+                                    <h1 className="text-9xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                                        Thank You
+                                    </h1>
+                                    <p className="text-3xl text-gray-600 mt-8">Keep Coding!</p>
+                                </div>
+                            )}
+
+                            {slide.type === 'concept' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-6 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 flex flex-col justify-center space-y-5">
+                                        {slide.points.map((point, idx) => (
+                                            <div key={idx} className="flex items-start space-x-4">
+                                                <button
+                                                    onClick={() => toggleStep(currentSlide, idx)}
+                                                    className="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-all"
+                                                >
+                                                    {revealedSteps[`${currentSlide}-${idx}`] ? <Eye /> : <EyeOff />}
+                                                </button>
+                                                <div className={`text-xl transition-all duration-500 ${
+                                                    revealedSteps[`${currentSlide}-${idx}`]
+                                                        ? 'opacity-100 transform translate-x-0'
+                                                        : 'opacity-0 transform -translate-x-4'
+                                                }`}>
+                                                    <span className="text-blue-600 font-bold mr-3">▸</span>
+                                                    {point}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'code-annotated' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-3xl font-bold text-blue-900 mb-4 border-b-4 border-blue-500 pb-2">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 grid grid-cols-2 gap-6">
+                                        <div className="flex flex-col">
+                                            <div className="flex-1 bg-gray-900 rounded-lg p-5 overflow-auto relative">
+                                                <div className="font-mono text-base">
+                                                    {slide.code.map((line, lineIdx) => {
+                                                        const groupIdx = slide.revealGroups.findIndex(group => group.includes(lineIdx));
+                                                        const isRevealed = groupIdx !== -1 && revealedSteps[`${currentSlide}-${groupIdx}`];
+                                                        
+                                                        return (
+                                                            <div key={lineIdx} className={`code-line transition-all duration-300 ${
+                                                                isRevealed ? 'opacity-100' : 'opacity-20'
+                                                            }`}>
+                                                                <span className="text-gray-500 select-none mr-4 inline-block w-8 text-right text-sm">
+                                                                    {lineIdx + 1}
+                                                                </span>
+                                                                <span className={`${
+                                                                    line.includes('//') ? 'text-green-400' :
+                                                                    line.includes('/*') || line.includes('*/') ? 'text-green-400' :
+                                                                    line.includes('#include') ? 'text-pink-400' :
+                                                                    line.includes('void') || line.includes('int') || line.includes('float') ? 'text-blue-400' :
+                                                                    line.includes('printf') ? 'text-yellow-300' :
+                                                                    'text-gray-100'
+                                                                }`}>
+                                                                    {line || '\u00A0'}
+                                                                </span>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                                <div className="mt-4 flex flex-wrap gap-2">
+                                                    {slide.revealGroups.map((group, idx) => (
+                                                        <button
+                                                            key={idx}
+                                                            onClick={() => toggleStep(currentSlide, idx)}
+                                                            className={`px-3 py-1.5 rounded text-sm font-semibold transition-all ${
+                                                                revealedSteps[`${currentSlide}-${idx}`]
+                                                                    ? 'bg-green-500 text-white'
+                                                                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                                            }`}
+                                                        >
+                                                            Lines {group.length > 1 ? `${Math.min(...group)}-${Math.max(...group)}` : group[0]}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div className="mt-4 bg-green-900 text-green-100 rounded-lg p-4">
+                                                <div className="font-semibold text-lg mb-2">Output:</div>
+                                                <div className="font-mono text-base">{slide.output}</div>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col justify-center space-y-4">
+                                            <h3 className="text-2xl font-bold text-purple-700 mb-2">Annotations:</h3>
+                                            {slide.annotations.map((ann, idx) => (
+                                                <div key={idx} className={`p-4 rounded-lg border-l-4 ${
+                                                    ann.color === 'pink' ? 'bg-pink-50 border-pink-500' :
+                                                    ann.color === 'blue' ? 'bg-blue-50 border-blue-500' :
+                                                    ann.color === 'purple' ? 'bg-purple-50 border-purple-500' :
+                                                    'bg-yellow-50 border-yellow-500'
+                                                }`}>
+                                                    <div className="font-semibold text-gray-700 text-lg">Line {ann.line + 1}:</div>
+                                                    <div className="text-gray-800 text-base mt-1">{ann.label}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'explanation' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-6 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 flex flex-col justify-center space-y-5">
+                                        {slide.sections.map((section, idx) => (
+                                            <div key={idx} className="flex items-start space-x-4">
+                                                <button
+                                                    onClick={() => toggleStep(currentSlide, idx)}
+                                                    className="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-purple-500 hover:bg-purple-600 text-white flex items-center justify-center transition-all"
+                                                >
+                                                    {revealedSteps[`${currentSlide}-${idx}`] ? <Eye /> : <EyeOff />}
+                                                </button>
+                                                <div className={`flex-1 transition-all duration-500 ${
+                                                    revealedSteps[`${currentSlide}-${idx}`]
+                                                        ? 'opacity-100 transform translate-x-0'
+                                                        : 'opacity-0 transform -translate-x-4'
+                                                }`}>
+                                                    <h3 className="text-2xl font-bold text-purple-700 mb-2">{section.subtitle}</h3>
+                                                    <p className="text-lg text-gray-700 leading-relaxed">{section.content}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'variable-declaration' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-5 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 overflow-auto space-y-5">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            {slide.dataTypes.map((dt, idx) => (
+                                                <div key={idx} className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border-2 border-blue-300">
+                                                    <div className="text-xl font-bold text-blue-700">{dt.type}</div>
+                                                    <div className="text-base text-gray-600 mb-2">{dt.desc}</div>
+                                                    <div className="font-mono text-base text-purple-700 bg-white p-2 rounded">{dt.example}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        
+                                        <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-5">
+                                            <div className="text-xl font-semibold text-gray-800 mb-3">{slide.scenario.text}</div>
+                                            <div className="font-mono text-2xl font-bold text-green-700 bg-white p-3 rounded">{slide.scenario.solution}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'variable-examples' && (
+                                <div className="h-full flex flex-col items-center justify-center">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-6 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="max-w-5xl w-full space-y-3">
+                                        {slide.examples.map((ex, idx) => (
+                                            <div key={idx} className={`flex items-center justify-between p-5 rounded-lg ${
+                                                ex.valid ? 'bg-green-50 border-4 border-green-400' : 'bg-red-50 border-4 border-red-400'
+                                            }`}>
+                                                <div className="flex items-center space-x-4">
+                                                    <span className="text-4xl font-bold">{ex.valid ? '✓' : '✗'}</span>
+                                                    <code className="font-mono text-2xl font-semibold">{ex.code}</code>
+                                                </div>
+                                                <div className="text-lg text-gray-600 italic">{ex.note}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'naming-rules' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-5 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 overflow-auto space-y-5">
+                                        <div className="bg-blue-50 rounded-lg p-5 border-2 border-blue-300">
+                                            <h3 className="text-2xl font-bold text-blue-800 mb-3">Rules:</h3>
+                                            <ul className="space-y-2">
+                                                {slide.rules.map((rule, idx) => (
+                                                    <li key={idx} className="text-lg text-gray-700 flex items-start">
+                                                        <span className="text-blue-600 mr-3 text-xl">•</span>
+                                                        <span>{rule}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+
+                                        <div className="bg-purple-50 rounded-lg p-5 border-2 border-purple-300">
+                                            <h3 className="text-2xl font-bold text-purple-800 mb-3">Naming Conventions:</h3>
+                                            <div className="space-y-2">
+                                                {slide.conventions.map((conv, idx) => (
+                                                    <div key={idx} className="text-lg text-gray-700 font-mono">{conv}</div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'naming-examples' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-5 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 grid grid-cols-2 gap-6">
+                                        <div className="bg-green-50 rounded-lg p-5 border-4 border-green-400">
+                                            <h3 className="text-3xl font-bold text-green-800 mb-4">✓ Valid Examples</h3>
+                                            <div className="space-y-3">
+                                                {slide.validExamples.map((ex, idx) => (
+                                                    <div key={idx} className="font-mono text-xl text-gray-700 bg-white p-4 rounded-lg border-2 border-green-300">
+                                                        {ex}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-red-50 rounded-lg p-5 border-4 border-red-400">
+                                            <h3 className="text-3xl font-bold text-red-800 mb-4">✗ Invalid Examples</h3>
+                                            <div className="space-y-3">
+                                                {slide.invalidExamples.map((ex, idx) => (
+                                                    <div key={idx} className="bg-white p-4 rounded-lg border-2 border-red-300">
+                                                        <div className="font-mono text-xl text-gray-700 font-semibold">{ex.code}</div>
+                                                        <div className="text-base text-red-600 italic mt-2">❌ {ex.reason}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'keywords' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-4 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <p className="text-xl text-red-600 font-semibold mb-5">{slide.description}</p>
+                                    <div className="flex-1 flex flex-col justify-center space-y-4">
+                                        {slide.keywords.map((row, idx) => (
+                                            <div key={idx} className="flex items-center space-x-4">
+                                                <button
+                                                    onClick={() => toggleStep(currentSlide, idx)}
+                                                    className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500 hover:bg-purple-600 text-white flex items-center justify-center"
+                                                >
+                                                    {revealedSteps[`${currentSlide}-${idx}`] ? <Eye /> : <EyeOff />}
+                                                </button>
+                                                <div className={`flex-1 grid grid-cols-5 gap-4 transition-all duration-500 ${
+                                                    revealedSteps[`${currentSlide}-${idx}`]
+                                                        ? 'opacity-100 transform translate-x-0'
+                                                        : 'opacity-0 transform -translate-x-4'
+                                                }`}>
+                                                    {row.map((keyword, kidx) => (
+                                                        <div
+                                                            key={kidx}
+                                                            className="bg-purple-100 border-2 border-purple-400 rounded-lg px-4 py-3 text-center font-mono font-bold text-purple-900 text-lg"
+                                                        >
+                                                            {keyword}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'code-with-output' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-3xl font-bold text-blue-900 mb-3 border-b-4 border-blue-500 pb-2">
+                                        {slide.title}
+                                    </h2>
+                                    {slide.description && (
+                                        <p className="text-lg text-gray-600 mb-4 italic">{slide.description}</p>
+                                    )}
+                                    <div className="flex-1 flex flex-col">
+                                        <div className="flex-1 bg-gray-900 rounded-lg p-5 overflow-auto">
+                                            <div className="font-mono text-base">
+                                                {slide.code.map((line, lineIdx) => {
+                                                    const groupIdx = slide.revealGroups.findIndex(group => group.includes(lineIdx));
+                                                    const isRevealed = groupIdx !== -1 && revealedSteps[`${currentSlide}-${groupIdx}`];
+                                                    
+                                                    return (
+                                                        <div key={lineIdx} className={`code-line transition-all duration-300 ${
+                                                            isRevealed ? 'opacity-100' : 'opacity-20'
+                                                        }`}>
+                                                            <span className="text-gray-500 select-none mr-4 inline-block w-8 text-right text-sm">
+                                                                {lineIdx + 1}
+                                                            </span>
+                                                            <span className={`${
+                                                                line.includes('//') ? 'text-green-400' :
+                                                                line.includes('/*') || line.includes('*/') ? 'text-green-400' :
+                                                                line.includes('#include') ? 'text-pink-400' :
+                                                                line.includes('void') || line.includes('int') || line.includes('float') ? 'text-blue-400' :
+                                                                line.includes('printf') || line.includes('scanf') ? 'text-yellow-300' :
+                                                                'text-gray-100'
+                                                            }`}>
+                                                                {line || '\u00A0'}
+                                                            </span>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                            <div className="mt-4 flex flex-wrap gap-2">
+                                                {slide.revealGroups.map((group, idx) => (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => toggleStep(currentSlide, idx)}
+                                                        className={`px-3 py-1.5 rounded text-sm font-semibold transition-all ${
+                                                            revealedSteps[`${currentSlide}-${idx}`]
+                                                                ? 'bg-green-500 text-white'
+                                                                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                                        }`}
+                                                    >
+                                                        Lines {group.length > 1 ? `${Math.min(...group)}-${Math.max(...group)}` : group[0]}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className="mt-4 bg-green-900 text-green-100 rounded-lg p-4">
+                                            <div className="font-semibold text-xl mb-2">Output:</div>
+                                            <div className="font-mono text-base whitespace-pre-wrap">{slide.output}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'modifiers' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-5 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 grid grid-cols-2 gap-6">
+                                        <div className="bg-purple-50 rounded-lg p-5 border-2 border-purple-300">
+                                            <h3 className="text-2xl font-bold text-purple-800 mb-3">{slide.modifiers.title}</h3>
+                                            <p className="text-lg text-gray-700 mb-4">{slide.modifiers.desc}</p>
+                                            <div className="space-y-3">
+                                                {slide.modifiers.examples.map((ex, idx) => (
+                                                    <div key={idx} className="bg-white p-3 rounded-lg border border-purple-200">
+                                                        <div className="font-mono text-base font-semibold text-gray-800 mb-2">{ex.code}</div>
+                                                        <div className="text-sm text-gray-600 italic">{ex.note}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-blue-50 rounded-lg p-5 border-2 border-blue-300">
+                                            <h3 className="text-2xl font-bold text-blue-800 mb-3">{slide.specifiers.title}</h3>
+                                            <div className="space-y-3">
+                                                {slide.specifiers.list.map((spec, idx) => (
+                                                    <div key={idx} className="bg-white p-3 rounded-lg border border-blue-200 flex items-center justify-between">
+                                                        <div className="flex items-center space-x-4">
+                                                            <span className="font-mono text-xl font-bold text-purple-700">{spec.specifier}</span>
+                                                            {spec.type && <span className="text-base font-semibold text-gray-700">{spec.type}</span>}
+                                                        </div>
+                                                        <div className="text-sm text-gray-600 italic">{spec.note}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'scanf-explanation' && (
+                                <div className="h-full flex flex-col items-center justify-center">
+                                    <div className="max-w-5xl w-full">
+                                        <h2 className="text-4xl font-bold text-blue-900 mb-6 border-b-4 border-blue-500 pb-3 text-center">
+                                            {slide.title}
+                                        </h2>
+                                        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-8 border-4 border-yellow-400 shadow-2xl">
+                                            <div className="space-y-4 mb-6">
+                                                {slide.explanation.map((point, idx) => (
+                                                    <div key={idx} className="flex items-start space-x-3">
+                                                        <span className="text-yellow-600 text-2xl font-bold">▸</span>
+                                                        <p className="text-xl text-gray-800 leading-relaxed">{point}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            
+                                            <div className="bg-white rounded-lg p-6 border-2 border-yellow-500 mt-6">
+                                                <div className="text-lg font-semibold text-gray-700 mb-3">Example:</div>
+                                                <div className="font-mono text-2xl font-bold text-purple-700 mb-2">{slide.example.code}</div>
+                                                <div className="text-base text-gray-600 italic">{slide.example.note}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'operators-bitwise' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-5 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 grid grid-cols-2 gap-6">
+                                        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-5 border-4 border-blue-400">
+                                            <h3 className="text-3xl font-bold text-blue-800 mb-4">{slide.leftSection.title}</h3>
+                                            <div className="space-y-3">
+                                                {slide.leftSection.ops.map((op, idx) => (
+                                                    <div key={idx} className="bg-white p-4 rounded-lg border-2 border-blue-300 flex items-center space-x-4">
+                                                        <span className="font-mono text-3xl font-bold text-purple-700 w-16 text-center">{op.symbol}</span>
+                                                        <span className="text-xl text-gray-700 font-semibold">{op.name}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-5 border-4 border-purple-400">
+                                            <h3 className="text-3xl font-bold text-purple-800 mb-2">{slide.rightSection.title}</h3>
+                                            <p className="text-base text-gray-600 italic mb-4">{slide.rightSection.subtitle}</p>
+                                            <div className="space-y-3">
+                                                {slide.rightSection.ops.map((op, idx) => (
+                                                    <div key={idx} className="bg-white p-3 rounded-lg border-2 border-purple-300">
+                                                        <div className="flex items-center space-x-3 mb-1">
+                                                            <span className="font-mono text-2xl font-bold text-purple-700">{op.symbol}</span>
+                                                            <span className="text-lg text-gray-700 font-semibold">{op.name}</span>
+                                                        </div>
+                                                        <div className="font-mono text-base text-green-700 bg-green-50 p-2 rounded mt-2">
+                                                            {op.example}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'assignment-operators' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-5 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 grid grid-cols-2 gap-6">
+                                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-5 border-4 border-green-400">
+                                            <h3 className="text-2xl font-bold text-green-800 mb-4">Basic Operations</h3>
+                                            <div className="space-y-4">
+                                                {slide.leftExamples.map((ex, idx) => (
+                                                    <div key={idx} className="bg-white p-5 rounded-lg border-2 border-green-300">
+                                                        <div className="font-mono text-xl font-bold text-gray-800 mb-3 whitespace-pre-wrap">{ex.code}</div>
+                                                        <div className="text-base text-gray-600 whitespace-pre-wrap">{ex.desc}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg p-5 border-4 border-yellow-400">
+                                            <h3 className="text-2xl font-bold text-yellow-800 mb-4">Pre vs Post Increment</h3>
+                                            <div className="space-y-4">
+                                                {slide.rightExamples.map((ex, idx) => (
+                                                    <div key={idx} className="bg-white p-5 rounded-lg border-2 border-yellow-300">
+                                                        <div className="font-mono text-lg font-bold text-gray-800 mb-3 whitespace-pre-wrap">{ex.code}</div>
+                                                        <div className="text-sm text-gray-600 whitespace-pre-wrap">{ex.desc}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'practice' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-5 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 overflow-auto">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            {slide.problems.map((problem, idx) => (
+                                                <div key={idx} className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-5 border-3 border-purple-300 shadow-lg hover:shadow-xl transition-shadow">
+                                                    <div className="flex items-start space-x-4">
+                                                        <div className="flex-shrink-0 w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-xl">
+                                                            {idx + 1}
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <p className="text-lg font-semibold text-gray-800">{problem}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<CPresentation />);
+    </script>
+</body>
+</html>
