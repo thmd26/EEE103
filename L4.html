@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Statements in C - EEE 103 L4</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        }
+        .code-line {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const Eye = () => (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        );
+
+        const EyeOff = () => (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+        );
+
+        const CPresentation = () => {
+            const [currentSlide, setCurrentSlide] = useState(0);
+            const [revealedSteps, setRevealedSteps] = useState({});
+
+            const slides = [
+                {
+                    type: 'title',
+                    content: {
+                        courseCode: 'EEE: 103',
+                        courseTitle: 'Computer Programming',
+                        topic: 'L4: Control Statements',
+                        subtitle: 'Part 1: Decision Making',
+                        faculty: 'Sk Tahmed Salim Rafid'
+                    }
+                },
+                {
+                    type: 'concept',
+                    title: 'What are Control Statements?',
+                    points: [
+                        'Control statements are used to control the flow of execution in a program',
+                        'They allow the program to make decisions based on certain conditions',
+                        'Without control statements, programs execute sequentially line by line',
+                        'Control statements enable programs to be dynamic and responsive'
+                    ]
+                },
+                {
+                    type: 'relational-operators',
+                    title: 'Relational Operators',
+                    description: 'Used to compare two values and return true (1) or false (0)',
+                    operators: [
+                        { symbol: '<', name: 'Less than', example: '5 < 10 → true' },
+                        { symbol: '>', name: 'Greater than', example: '15 > 10 → true' },
+                        { symbol: '<=', name: 'Less than or equal to', example: '5 <= 5 → true' },
+                        { symbol: '>=', name: 'Greater than or equal to', example: '10 >= 5 → true' },
+                        { symbol: '==', name: 'Equal to', example: '5 == 5 → true' },
+                        { symbol: '!=', name: 'Not equal to', example: '5 != 10 → true' }
+                    ]
+                },
+                {
+                    type: 'types',
+                    title: 'Types of Decision-Making Control Statements',
+                    items: [
+                        { name: 'if', desc: 'Execute code only if condition is true' },
+                        { name: 'if...else', desc: 'Choose between two alternatives' },
+                        { name: 'if...else if...else', desc: 'Handle multiple conditions' },
+                        { name: 'switch', desc: 'Select from multiple discrete options' }
+                    ]
+                },
+                {
+                    type: 'statement-intro',
+                    title: 'The if Statement',
+                    description: 'The if statement allows a program to execute a block of code only if a specific condition is true.',
+                    syntax: 'if (condition) {\n    // statements to execute if condition is true\n}',
+                    explanation: [
+                        'The condition inside the parentheses is evaluated',
+                        'If the condition is true, the statements inside { } are executed',
+                        'If the condition is false, the program skips the if block',
+                        'Program continues with the next statement after the if'
+                    ]
+                },
+                {
+                    type: 'code-with-output',
+                    title: 'if Statement - Example',
+                    description: 'Check if a number is positive',
+                    code: [
+                        '#include <stdio.h>',
+                        '',
+                        'void main() {',
+                        '    int number;',
+                        '    printf("Enter a number: ");',
+                        '    scanf("%d", &number);',
+                        '',
+                        '    if (number > 0) {',
+                        '        printf("The number is positive.\\n");',
+                        '    }',
+                        '}'
+                    ],
+                    output: 'Input: 5\nThe number is positive.\n\nInput: -3',
+                    revealGroups: [[0], [1,2,10], [3], [4], [5], [6,7,9], [8]]
+                },
+                {
+                    type: 'flow-explanation',
+                    title: 'if Statement - Flow',
+                    steps: [
+                        'User enters a number',
+                        'Program checks: number > 0',
+                        'If TRUE → prints "The number is positive."',
+                        'If FALSE → skips the print statement',
+                        'Program continues to end'
+                    ]
+                },
+                {
+                    type: 'statement-intro',
+                    title: 'The if...else Statement',
+                    description: 'The if...else statement allows the program to choose between two alternatives.',
+                    syntax: 'if (condition) {\n    // executed if condition is true\n} else {\n    // executed if condition is false\n}',
+                    explanation: [
+                        'First, the condition is evaluated',
+                        'If the condition is true, the if block executes and else is skipped',
+                        'If the condition is false, the else block executes',
+                        'Only ONE block executes, never both'
+                    ]
+                },
+                {
+                    type: 'code-with-output',
+                    title: 'if...else Statement - Example',
+                    description: 'Check if a number is even or odd',
+                    code: [
+                        '#include <stdio.h>',
+                        '',
+                        'void main() {',
+                        '    int number;',
+                        '    printf("Enter a number: ");',
+                        '    scanf("%d", &number);',
+                        '',
+                        '    if (number % 2 == 0) {',
+                        '        printf("The number is even.\\n");',
+                        '    } else {',
+                        '        printf("The number is odd.\\n");',
+                        '    }',
+                        '}'
+                    ],
+                    output: 'Input: 4\nThe number is even.\n\nInput: 7\nThe number is odd.',
+                    revealGroups: [[0], [1,2,12], [3], [4], [5], [6,7,9], [8],[11], [10]]
+                },
+                {
+                    type: 'flow-explanation',
+                    title: 'if...else Statement - Flow',
+                    steps: [
+                        'Program checks if number is divisible by 2',
+                        'If TRUE → prints "The number is even."',
+                        'If FALSE → prints "The number is odd."',
+                        'Only one block executes, never both',
+                        'This is called binary decision making'
+                    ]
+                },
+                {
+                    type: 'statement-intro',
+                    title: 'The if...else if...else Statement',
+                    description: 'When there are more than two conditions, we use if...else if...else.',
+                    syntax: 'if (condition1) {\n    // executed if condition1 is true\n} else if (condition2) {\n    // executed if condition2 is true\n} else if (condition3) {\n    // executed if condition3 is true\n} else {\n    // executed if all conditions are false\n}',
+                    explanation: [
+                        'Conditions are checked in order from top to bottom',
+                        'The first true condition executes its block',
+                        'Once a condition is true, remaining conditions are skipped',
+                        'If no condition is true, the else block executes'
+                    ]
+                },
+                {
+                    type: 'code-with-output',
+                    title: 'if...else if...else - Example',
+                    description: 'Grade calculation based on marks',
+                    code: [
+                        '#include <stdio.h>',
+                        '',
+                        'void main() {',
+                        '    int marks;',
+                        '    printf("Enter your marks: ");',
+                        '    scanf("%d", &marks);',
+                        '',
+                        '    if (marks >= 80) {',
+                        '        printf("Grade: A\\n");',
+                        '    } else if (marks >= 60) {',
+                        '        printf("Grade: B\\n");',
+                        '    } else if (marks >= 50) {',
+                        '        printf("Grade: C\\n");',
+                        '    } else {',
+                        '        printf("Grade: F\\n");',
+                        '    }',
+                        '}'
+                    ],
+                    output: 'Input: 65\nGrade: B',
+                    revealGroups: [[0], [1,2,16], [3], [4], [5], [6,7,15], [8], [9,10], [11,12], [13,14]]
+                },
+                {
+                    type: 'flow-explanation',
+                    title: 'if...else if...else - Flow',
+                    steps: [
+                        'Step 1: Checks marks >= 80',
+                        '  → If TRUE: prints "Grade A" and skips remaining blocks',
+                        '  → If FALSE: moves to next condition',
+                        'Step 2: Checks marks >= 60',
+                        'Step 3: Checks marks >= 50',
+                        'Step 4: If all conditions fail → executes else → "Grade F"',
+                        'Important: Only ONE block executes!'
+                    ]
+                },
+                {
+                    type: 'statement-intro',
+                    title: 'The switch Statement',
+                    description: 'The switch statement is used to select one action from multiple discrete options based on the value of a variable.',
+                    syntax: 'switch (expression) {\n    case value1:\n        // code for value1\n        break;\n    case value2:\n        // code for value2\n        break;\n    default:\n        // code if no case matches\n}',
+                    explanation: [
+                        'The expression is evaluated once',
+                        'Program compares it to each case value',
+                        'If a match is found → executes that case block',
+                        'break ensures the program exits after the matched case',
+                        'default executes if no case matches'
+                    ]
+                },
+                {
+                    type: 'code-with-output',
+                    title: 'switch Statement - Example',
+                    description: 'Day of the week finder',
+                    code: [
+                        '#include <stdio.h>',
+                        '',
+                        'void main() {',
+                        '    int day;',
+                        '    printf("Enter day number (1-7): ");',
+                        '    scanf("%d", &day);',
+                        '',
+                        '    switch(day) {',
+                        '        case 1:',
+                        '            printf("Sunday\\n");',
+                        '            break;',
+                        '        case 2:',
+                        '            printf("Monday\\n");',
+                        '            break;',
+                        '        case 3:',
+                        '            printf("Tuesday\\n");',
+                        '            break;',
+                        '        case 4:',
+                        '            printf("Wednesday\\n");',
+                        '            break;',
+                        '        case 5:',
+                        '            printf("Thursday\\n");',
+                        '            break;',
+                        '        case 6:',
+                        '            printf("Friday\\n");',
+                        '            break;',
+                        '        case 7:',
+                        '            printf("Saturday\\n");',
+                        '            break;',
+                        '        default:',
+                        '            printf("Invalid day number\\n");',
+                        '    }',
+                        '}'
+                    ],
+                    output: 'Input: 1\nSunday\n\nInput: 5\nThursday\n\nInput: 9\nInvalid day number',
+                    revealGroups: [[0], [1,2,31], [3], [4], [5], [6,7,30], [8,9,10], [11,12,13], [14,15,16], [17,18,19], [20,21,22], [23,24,25], [26,27,28], [29]]
+                },
+                {
+                    type: 'switch-notes',
+                    title: 'Important Notes on switch',
+                    notes: [
+                        { title: 'break is crucial', desc: 'Without break, execution "falls through" to the next case' },
+                        { title: 'Expression type', desc: 'Switch works with int, char - not with float or string' },
+                        { title: 'Case values', desc: 'Must be constant values, not variables or expressions' },
+                        { title: 'default is optional', desc: 'But recommended for handling unexpected values' },
+                        { title: 'Multiple cases', desc: 'Can have multiple cases execute same code by omitting break' }
+                    ]
+                },
+                {
+                    type: 'summary-table',
+                    title: 'Summary: Control Statements',
+                    headers: ['Statement', 'How it works', 'When to use'],
+                    rows: [
+                        ['if', 'Executes block if condition is true', 'One condition to check'],
+                        ['if...else', 'Executes if block if true, else block if false', 'Two options'],
+                        ['if...else if...else', 'Checks conditions in order, executes first true block', 'Multiple options'],
+                        ['switch', 'Executes case block matching the expression', 'Discrete values, many options']
+                    ]
+                },
+                {
+                    type: 'practice',
+                    title: 'Practice Problems',
+                    problems: [
+                        'Question 1: Write a program to check if a number is divisible (by 5) (by 5 or 7) (by 5 and 7 both)',
+                        'Question 2: Write a program to find the largest of two numbers',
+                        'Question 3: Write a program to check if a year is a leap year (The year is multiple of 400 or the year is a multiple of 4 and not a multiple of 100.)',
+                        'Question 4: Write a program to display the month name using switch (1-12)',
+                        'Question 5: Write a program to calculate electricity bill based on units consumed',
+                        'Question 6: Write a program to create a simple calculator using switch (+, -, *, /) [Use char for operation]',
+                        'Question 7: Write a program to check if a character is vowel or consonant (ASCII)',
+                        'Question 8: Write a program to display menu options and perform actions using switch (BKASH/*121#)'
+                    ]
+                },
+                {
+                    type: 'thankyou'
+                }
+            ];
+
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === 'b' || e.key === 'B') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        const newRevealed = { ...revealedSteps };
+                        
+                        if (slide.type === 'concept' || slide.type === 'flow-explanation') {
+                            const items = slide.points || slide.steps || [];
+                            for (let i = 0; i < items.length; i++) {
+                                newRevealed[`${currentSlide}-${i}`] = true;
+                            }
+                        } else if (slide.type === 'code-with-output') {
+                            for (let i = 0; i < slide.revealGroups.length; i++) {
+                                newRevealed[`${currentSlide}-${i}`] = true;
+                            }
+                        } else if (slide.type === 'statement-intro') {
+                            for (let i = 0; i < slide.explanation.length; i++) {
+                                newRevealed[`${currentSlide}-${i}`] = true;
+                            }
+                        }
+                        
+                        setRevealedSteps(newRevealed);
+                    } else if (e.key === 'Tab') {
+                        e.preventDefault();
+                        if (currentSlide < slides.length - 1) {
+                            setCurrentSlide(prev => prev + 1);
+                            setRevealedSteps({});
+                        }
+                    } else if (e.key === 'ArrowRight') {
+                        setCurrentSlide(prev => Math.min(slides.length - 1, prev + 1));
+                        setRevealedSteps({});
+                    } else if (e.key === 'ArrowLeft') {
+                        setCurrentSlide(prev => Math.max(0, prev - 1));
+                        setRevealedSteps({});
+                    } else if (e.key === 'ArrowDown' || e.key === ' ') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        
+                        if (slide.type === 'title' || slide.type === 'thankyou' || slide.type === 'types' ||
+                            slide.type === 'switch-notes' || slide.type === 'summary-table' || slide.type === 'practice' ||
+                            slide.type === 'relational-operators') {
+                            if (currentSlide < slides.length - 1) {
+                                setCurrentSlide(prev => prev + 1);
+                                setRevealedSteps({});
+                            }
+                            return;
+                        }
+                        
+                        let totalSteps = 0;
+                        if (slide.type === 'concept') totalSteps = slide.points ? slide.points.length : 0;
+                        else if (slide.type === 'flow-explanation') totalSteps = slide.steps ? slide.steps.length : 0;
+                        else if (slide.type === 'code-with-output') totalSteps = slide.revealGroups ? slide.revealGroups.length : 0;
+                        else if (slide.type === 'statement-intro') totalSteps = slide.explanation ? slide.explanation.length : 0;
+                        
+                        let allRevealed = true;
+                        for (let i = 0; i < totalSteps; i++) {
+                            if (!revealedSteps[`${currentSlide}-${i}`]) {
+                                allRevealed = false;
+                                break;
+                            }
+                        }
+                        
+                        if (allRevealed && totalSteps > 0) {
+                            if (currentSlide < slides.length - 1) {
+                                setCurrentSlide(prev => prev + 1);
+                                setRevealedSteps({});
+                            }
+                        } else {
+                            for (let i = 0; i < totalSteps; i++) {
+                                if (!revealedSteps[`${currentSlide}-${i}`]) {
+                                    setRevealedSteps(prev => ({ ...prev, [`${currentSlide}-${i}`]: true }));
+                                    break;
+                                }
+                            }
+                        }
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        
+                        if (slide.type === 'title' || slide.type === 'thankyou' || slide.type === 'types' ||
+                            slide.type === 'switch-notes' || slide.type === 'summary-table' || slide.type === 'practice' ||
+                            slide.type === 'relational-operators') {
+                            if (currentSlide > 0) {
+                                setCurrentSlide(prev => prev - 1);
+                                setRevealedSteps({});
+                            }
+                            return;
+                        }
+                        
+                        let totalSteps = 0;
+                        if (slide.type === 'concept') totalSteps = slide.points ? slide.points.length : 0;
+                        else if (slide.type === 'flow-explanation') totalSteps = slide.steps ? slide.steps.length : 0;
+                        else if (slide.type === 'code-with-output') totalSteps = slide.revealGroups ? slide.revealGroups.length : 0;
+                        else if (slide.type === 'statement-intro') totalSteps = slide.explanation ? slide.explanation.length : 0;
+                        
+                        let anyRevealed = false;
+                        for (let i = 0; i < totalSteps; i++) {
+                            if (revealedSteps[`${currentSlide}-${i}`]) {
+                                anyRevealed = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!anyRevealed && currentSlide > 0) {
+                            setCurrentSlide(prev => prev - 1);
+                            setRevealedSteps({});
+                            return;
+                        }
+                        
+                        for (let i = totalSteps - 1; i >= 0; i--) {
+                            if (revealedSteps[`${currentSlide}-${i}`]) {
+                                const newRevealed = { ...revealedSteps };
+                                delete newRevealed[`${currentSlide}-${i}`];
+                                setRevealedSteps(newRevealed);
+                                break;
+                            }
+                        }
+                    }
+                };
+
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [currentSlide, revealedSteps, slides]);
+
+            const toggleStep = (slideIdx, stepIdx) => {
+                const key = `${slideIdx}-${stepIdx}`;
+                setRevealedSteps(prev => ({ ...prev, [key]: !prev[key] }));
+            };
+
+            const slide = slides[currentSlide];
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex flex-col items-center justify-center p-4">
+                    <div className="bg-white rounded-xl shadow-2xl h-full flex flex-col" style={{ width: '1280px', height: '770px', maxWidth: '95vw', maxHeight: '95vh' }}>
+                        
+                        <div className="flex-1 overflow-auto p-8">
+                            {slide.type === 'title' && (
+                                <div className="h-full flex flex-col items-center justify-center text-center space-y-6">
+                                    <div className="text-blue-600 font-bold text-2xl">{slide.content.courseCode}</div>
+                                    <div className="text-3xl font-semibold text-gray-700">{slide.content.courseTitle}</div>
+                                    <div className="text-6xl font-bold text-gray-900 mt-8">{slide.content.topic}</div>
+                                    <div className="text-3xl font-semibold text-purple-600 mt-2">{slide.content.subtitle}</div>
+                                    <div className="mt-12 text-xl text-gray-600">Prepared by: {slide.content.faculty}</div>
+                                </div>
+                            )}
+
+                            {slide.type === 'thankyou' && (
+                                <div className="flex flex-col items-center justify-center h-full text-center">
+                                    <h1 className="text-9xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                                        Thank You
+                                    </h1>
+                                    <p className="text-3xl text-gray-600 mt-8">Keep Coding!</p>
+                                </div>
+                            )}
+
+                            {slide.type === 'concept' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-6 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 flex flex-col justify-center space-y-5">
+                                        {slide.points.map((point, idx) => (
+                                            <div key={idx} className="flex items-start space-x-4">
+                                                <button
+                                                    onClick={() => toggleStep(currentSlide, idx)}
+                                                    className="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-all"
+                                                >
+                                                    {revealedSteps[`${currentSlide}-${idx}`] ? <Eye /> : <EyeOff />}
+                                                </button>
+                                                <div className={`text-3xl transition-all duration-500 ${
+                                                    revealedSteps[`${currentSlide}-${idx}`]
+                                                        ? 'opacity-100 transform translate-x-0'
+                                                        : 'opacity-0 transform -translate-x-4'
+                                                }`}>
+                                                    <span className="text-blue-600 font-bold mr-3">▸</span>
+                                                    {point}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'relational-operators' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-5 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="bg-yellow-50 border-4 border-yellow-400 rounded-lg p-5 mb-5">
+                                        <p className="text-xl text-gray-800 font-semibold">{slide.description}</p>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <div className="grid grid-cols-2 gap-5">
+                                            {slide.operators.map((op, idx) => (
+                                                <div key={idx} className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border-4 border-purple-400 shadow-lg">
+                                                    <div className="flex items-center justify-between mb-3">
+                                                        <div className="text-5xl font-bold text-purple-700 font-mono">{op.symbol}</div>
+                                                        <div className="text-2xl font-bold text-gray-800">{op.name}</div>
+                                                    </div>
+                                                    <div className="bg-white rounded-lg p-3 border-2 border-purple-300">
+                                                        <div className="text-2xl font-mono text-gray-700">{op.example}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'types' && (
+                                <div className="h-full flex flex-col items-center justify-center">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-8 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="grid grid-cols-2 gap-6 max-w-5xl">
+                                        {slide.items.map((item, idx) => (
+                                            <div key={idx} className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border-4 border-purple-400 shadow-lg">
+                                                <div className="text-3xl font-bold text-purple-700 mb-3 font-mono">{item.name}</div>
+                                                <div className="text-lg text-gray-700">{item.desc}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'statement-intro' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-4 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 overflow-auto space-y-5">
+                                        <div className="bg-yellow-50 border-4 border-yellow-400 rounded-lg p-5">
+                                            <p className="text-xl text-gray-800 leading-relaxed">{slide.description}</p>
+                                        </div>
+
+                                        <div className="bg-gray-900 rounded-lg p-5">
+                                            <div className="text-green-400 font-semibold text-lg mb-3">Syntax:</div>
+                                            <pre className="text-gray-100 font-mono text-base whitespace-pre-wrap">{slide.syntax}</pre>
+                                        </div>
+
+                                        <div className="bg-blue-50 rounded-lg p-5 border-2 border-blue-300">
+                                            <div className="text-blue-800 font-bold text-xl mb-4">Explanation:</div>
+                                            <div className="space-y-3">
+                                                {slide.explanation.map((exp, idx) => (
+                                                    <div key={idx} className="flex items-start space-x-3">
+                                                        <button
+                                                            onClick={() => toggleStep(currentSlide, idx)}
+                                                            className="mt-1 flex-shrink-0 w-7 h-7 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center"
+                                                        >
+                                                            {revealedSteps[`${currentSlide}-${idx}`] ? <Eye /> : <EyeOff />}
+                                                        </button>
+                                                        <div className={`text-2xl text-gray-700 transition-all duration-500 ${
+                                                            revealedSteps[`${currentSlide}-${idx}`]
+                                                                ? 'opacity-100 transform translate-x-0'
+                                                                : 'opacity-0 transform -translate-x-4'
+                                                        }`}>
+                                                            <span className="text-blue-600 mr-2">•</span>
+                                                            {exp}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'code-with-output' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-3xl font-bold text-blue-900 mb-3 border-b-4 border-blue-500 pb-2">
+                                        {slide.title}
+                                    </h2>
+                                    {slide.description && (
+                                        <p className="text-lg text-gray-600 mb-4 italic">{slide.description}</p>
+                                    )}
+                                    <div className="flex-1 flex flex-col">
+                                        <div className="flex-1 bg-gray-900 rounded-lg p-5 overflow-auto">
+                                            <div className="font-mono text-base">
+                                                {slide.code.map((line, lineIdx) => {
+                                                    const groupIdx = slide.revealGroups.findIndex(group => group.includes(lineIdx));
+                                                    const isRevealed = groupIdx !== -1 && revealedSteps[`${currentSlide}-${groupIdx}`];
+                                                    
+                                                    return (
+                                                        <div key={lineIdx} className={`code-line transition-all duration-300 ${
+                                                            isRevealed ? 'opacity-100' : 'opacity-20'
+                                                        }`}>
+                                                            <span className="text-gray-500 select-none mr-4 inline-block w-8 text-right text-sm">
+                                                                {lineIdx + 1}
+                                                            </span>
+                                                            <span className={`${
+                                                                line.includes('//') ? 'text-green-400' :
+                                                                line.includes('/*') || line.includes('*/') ? 'text-green-400' :
+                                                                line.includes('#include') ? 'text-pink-400' :
+                                                                line.includes('void') || line.includes('int') || line.includes('float') ? 'text-blue-400' :
+                                                                line.includes('printf') || line.includes('scanf') ? 'text-yellow-300' :
+                                                                line.includes('if') || line.includes('else') || line.includes('switch') || line.includes('case') || line.includes('break') || line.includes('default') ? 'text-purple-400' :
+                                                                'text-gray-100'
+                                                            }`}>
+                                                                {line || '\u00A0'}
+                                                            </span>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                        <div className="mt-4 bg-green-900 text-green-100 rounded-lg p-4">
+                                            <div className="font-semibold text-xl mb-2">Output:</div>
+                                            <div className="font-mono text-base whitespace-pre-wrap">{slide.output}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'flow-explanation' && (
+                                <div className="h-full flex flex-col items-center justify-center">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-6 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="max-w-4xl w-full space-y-4">
+                                        {slide.steps && slide.steps.map((step, idx) => (
+                                            <div key={idx} className="flex items-start space-x-4">
+                                                <button
+                                                    onClick={() => toggleStep(currentSlide, idx)}
+                                                    className="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-green-500 hover:bg-green-600 text-white flex items-center justify-center transition-all"
+                                                >
+                                                    {revealedSteps[`${currentSlide}-${idx}`] ? <Eye /> : <EyeOff />}
+                                                </button>
+                                                <div className={`flex-1 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-5 border-3 border-green-400 shadow-md transition-all duration-500 ${
+                                                    revealedSteps[`${currentSlide}-${idx}`]
+                                                        ? 'opacity-100 transform translate-x-0'
+                                                        : 'opacity-0 transform -translate-x-4'
+                                                }`}>
+                                                    <div className="text-xl text-gray-800 font-semibold flex items-start">
+                                                        <span className="text-green-600 mr-3 text-2xl">→</span>
+                                                        <span>{step}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'switch-notes' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-6 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 flex flex-col justify-center space-y-4">
+                                        {slide.notes.map((note, idx) => (
+                                            <div key={idx} className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-5 border-4 border-yellow-400 shadow-lg">
+                                                <div className="flex items-start space-x-4">
+                                                    <div className="flex-shrink-0 w-10 h-10 bg-yellow-500 text-white rounded-full flex items-center justify-center font-bold text-xl">
+                                                        !
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h3 className="text-2xl font-bold text-yellow-800 mb-2">{note.title}</h3>
+                                                        <p className="text-lg text-gray-700">{note.desc}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'summary-table' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-5 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 flex items-center justify-center">
+                                        <table className="w-full max-w-5xl border-collapse">
+                                            <thead>
+                                                <tr className="bg-blue-600 text-white">
+                                                    {slide.headers.map((header, idx) => (
+                                                        <th key={idx} className="border-2 border-blue-700 px-6 py-4 text-left text-xl font-bold">
+                                                            {header}
+                                                        </th>
+                                                    ))}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {slide.rows.map((row, idx) => (
+                                                    <tr key={idx} className="bg-white hover:bg-blue-50 transition-colors">
+                                                        <td className="border-2 border-gray-300 px-6 py-4 font-mono text-xl font-bold text-purple-700">
+                                                            {row[0]}
+                                                        </td>
+                                                        <td className="border-2 border-gray-300 px-6 py-4 text-lg text-gray-700">
+                                                            {row[1]}
+                                                        </td>
+                                                        <td className="border-2 border-gray-300 px-6 py-4 text-lg text-gray-700">
+                                                            {row[2]}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'practice' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-5 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 overflow-auto">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            {slide.problems.map((problem, idx) => (
+                                                <div key={idx} className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-5 border-3 border-purple-300 shadow-lg hover:shadow-xl transition-shadow">
+                                                    <div className="flex items-start space-x-4">
+                                                        <div className="flex-shrink-0 w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-xl">
+                                                            {idx + 1}
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <p className="text-lg font-semibold text-gray-800">{problem}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<CPresentation />);
+    </script>
+</body>
+</html>
