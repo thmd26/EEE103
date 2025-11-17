@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Functions in C Programming - EEE 103</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        }
+        .code-line {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const Eye = () => (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        );
+
+        const EyeOff = () => (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+        );
+
+        const FunctionsPresentation = () => {
+            const [currentSlide, setCurrentSlide] = useState(0);
+            const [revealedSteps, setRevealedSteps] = useState({});
+
+            const slides = [
+                {
+                    type: 'title',
+                    content: {
+                        courseCode: 'EEE: 103',
+                        courseTitle: 'Computer Programming',
+                        topic: 'Functions in C',
+                        subtitle: 'Modular Programming',
+                        faculty: 'Sk Tahmed Salim Rafid'
+                    }
+                },
+                {
+                    type: 'concept',
+                    title: 'Introduction to Functions',
+                    definition: 'A function is a block of code that performs a specific task.',
+                    points: [
+                        'Better readability and modularity',
+                        'Reusability of code',
+                        'Easier debugging',
+                        'Structure and organization'
+                    ]
+                },
+                {
+                    type: 'structure',
+                    title: 'Basic Structure of a Function',
+                    parts: [
+                        { name: '1. Function Declaration (Prototype)', desc: 'Tells compiler about function before use' },
+                        { name: '2. Function Definition', desc: 'Contains the actual code/logic' },
+                        { name: '3. Function Call', desc: 'Executes the function' }
+                    ]
+                },
+                {
+                    type: 'syntax-triple',
+                    title: 'Function Syntax',
+                    sections: [
+                        {
+                            title: 'Function Declaration',
+                            code: 'return_type function_name(parameter_list);',
+                            example: 'int add(int x, int y);'
+                        },
+                        {
+                            title: 'Function Definition',
+                            code: 'return_type function_name(parameter_list) {\n    // function body\n}',
+                            example: 'int add(int x, int y) {\n    return x + y;\n}'
+                        },
+                        {
+                            title: 'Function Call',
+                            code: 'function_name(arguments);',
+                            example: 'int result = add(5, 3);'
+                        }
+                    ]
+                },
+                {
+                    type: 'prototype-slide',
+                    title: 'Function Prototype',
+                    description: 'Tells the compiler about the function before it is used',
+                    points: [
+                        'Function name',
+                        'Return type',
+                        'Parameter types'
+                    ],
+                    note: 'Used before the main() function',
+                    example: 'int add(int x, int y);  // prototype'
+                },
+                {
+                    type: 'code-with-output',
+                    title: 'Function Definition Example',
+                    description: 'Complete function with definition',
+                    code: [
+                        '#include <stdio.h>',
+                        '',
+                        'int add(int x, int y) {',
+                        '    return x + y;',
+                        '}',
+                        '',
+                        'void main() {',
+                        '    int result = add(5, 3);',
+                        '    printf("Sum = %d\\n", result);',
+                        '}'
+                    ],
+                    output: 'Sum = 8',
+                    revealGroups: [[0], [1,2,4], [3], [5,6,9], [7], [8]]
+                },
+                {
+                    type: 'types-header',
+                    title: 'Types of Functions',
+                    subtitle: 'Three main categories based on return type and parameters'
+                },
+                {
+                    type: 'code-with-output',
+                    title: 'A. Void Function (No Return Value)',
+                    description: 'Function that performs action but returns nothing',
+                    code: [
+                        '#include <stdio.h>',
+                        '',
+                        'void greet() {',
+                        '    printf("Hello!\\n");',
+                        '}',
+                        '',
+                        'void main() {',
+                        '    greet();',
+                        '}'
+                    ],
+                    output: 'Hello!',
+                    revealGroups: [[0], [1,2,4], [3], [5,6,8], [7]]
+                },
+                {
+                    type: 'code-with-output',
+                    title: 'B. Function With Return Value',
+                    description: 'Function that calculates and returns a result',
+                    code: [
+                        '#include <stdio.h>',
+                        '',
+                        'int square(int n) {',
+                        '    int result = n * n;',
+                        '    return result;',
+                        '}',
+                        '',
+                        'void main() {',
+                        '    int r = square(6);',
+                        '    printf("%d", r);',
+                        '}'
+                    ],
+                    output: '36',
+                    revealGroups: [[0], [1,2,5], [3], [4], [6,7,10], [8], [9]]
+                },
+                {
+                    type: 'code-with-output',
+                    title: 'C. Function with Parameters (Pass-by-Value)',
+                    description: 'C uses pass by value - function receives a copy of the variable',
+                    code: [
+                        '#include <stdio.h>',
+                        '',
+                        'void work(int x) {',
+                        '    printf("I got %d in work", x);',
+                        '}',
+                        '',
+                        'void main() {',
+                        '    int a = 5;',
+                        '    work(a);',
+                        '}'
+                    ],
+                    output: 'I got 5 in work',
+                    revealGroups: [[0], [1,2,4], [3], [5,6,9], [7], [8]]
+                },
+                {
+                    type: 'variables-header',
+                    title: 'Variables Scope',
+                    subtitle: 'Local Variables vs Global Variables'
+                },
+                {
+                    type: 'local-variables',
+                    title: 'Local Variables',
+                    points: [
+                        'Declared inside a function',
+                        'Exist only during function execution',
+                        'Not accessible from other functions',
+                        'Each function can have its own local variable with same name'
+                    ]
+                },
+                {
+                    type: 'code-with-output',
+                    title: 'Local Variables - Example',
+                    description: 'Each function has its own x variable',
+                    code: [
+                        '#include <stdio.h>',
+                        '',
+                        'void test() {',
+                        '    int x = 10;  // local variable',
+                        '    printf("%d\\n", x);',
+                        '}',
+                        '',
+                        'void main() {',
+                        '    int x = 5;',
+                        '    printf("%d\\n", x);',
+                        '    test();',
+                        '    printf("%d", x);',
+                        '}'
+                    ],
+                    output: '5\n10\n5',
+                    revealGroups: [[0], [1,2,5], [3], [4], [6,7,12], [8], [9], [10], [11]]
+                },
+                {
+                    type: 'global-variables',
+                    title: 'Global Variables',
+                    points: [
+                        'Declared outside all functions',
+                        'Accessible by all functions in the program',
+                        'Created when program starts',
+                        'Destroyed when program ends'
+                    ]
+                },
+                {
+                    type: 'code-with-output',
+                    title: 'Global Variables - Example',
+                    description: 'Variable g is accessible everywhere',
+                    code: [
+                        '#include <stdio.h>',
+                        '',
+                        'int g = 50;   // global variable',
+                        '',
+                        'void show() {',
+                        '    printf("Inside show: %d\\n", g);',
+                        '}',
+                        '',
+                        'void main() {',
+                        '    printf("Inside main: %d\\n", g);',
+                        '    g = 20;',
+                        '    show();',
+                        '}'
+                    ],
+                    output: 'Inside main: 50\nInside show: 20',
+                    revealGroups: [[0], [1,2], [3,4,6], [5], [7,8,12], [9], [10], [11]]
+                },
+                {
+                    type: 'code-with-output',
+                    title: 'Local vs Global - Combined Example',
+                    description: 'Local variable shadows global variable',
+                    code: [
+                        '#include <stdio.h>',
+                        '',
+                        'int g = 20;   // global',
+                        '',
+                        'void func() {',
+                        '    int g = 5;      // local (shadows global)',
+                        '    printf("Local g = %d\\n", g);',
+                        '}',
+                        '',
+                        'void main() {',
+                        '    printf("Global g = %d\\n", g);',
+                        '    func();',
+                        '}'
+                    ],
+                    output: 'Global g = 20\nLocal g = 5',
+                    revealGroups: [[0], [1,2], [3,4,7], [5], [6], [8,9,12], [10], [11]]
+                },
+                {
+                    type: 'practice',
+                    title: 'Practice Problems (Homework)',
+                    problems: [
+                        'Question 1: Write a function that returns the factorial of a number',
+                        'Question 2: Write a function to convert Celsius to Fahrenheit',
+                        'Question 3: Write a void function that prints the sum of first N numbers',
+                        'Question 4: Write a function that checks whether a number is prime',
+                        'Question 5: Write a function to compute power(a, b) without using pow()'
+                    ]
+                },
+                {
+                    type: 'thankyou'
+                }
+            ];
+
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === 'b' || e.key === 'B') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        const newRevealed = { ...revealedSteps };
+                        
+                        if (slide.type === 'concept' || slide.type === 'local-variables' || slide.type === 'global-variables') {
+                            const items = slide.points || [];
+                            for (let i = 0; i < items.length; i++) {
+                                newRevealed[`${currentSlide}-${i}`] = true;
+                            }
+                        } else if (slide.type === 'code-with-output') {
+                            for (let i = 0; i < slide.revealGroups.length; i++) {
+                                newRevealed[`${currentSlide}-${i}`] = true;
+                            }
+                        }
+                        
+                        setRevealedSteps(newRevealed);
+                    } else if (e.key === 'Tab') {
+                        e.preventDefault();
+                        if (currentSlide < slides.length - 1) {
+                            setCurrentSlide(prev => prev + 1);
+                            setRevealedSteps({});
+                        }
+                    } else if (e.key === 'ArrowRight') {
+                        setCurrentSlide(prev => Math.min(slides.length - 1, prev + 1));
+                        setRevealedSteps({});
+                    } else if (e.key === 'ArrowLeft') {
+                        setCurrentSlide(prev => Math.max(0, prev - 1));
+                        setRevealedSteps({});
+                    } else if (e.key === 'ArrowDown' || e.key === ' ') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        
+                        if (slide.type === 'title' || slide.type === 'thankyou' || slide.type === 'structure' ||
+                            slide.type === 'syntax-triple' || slide.type === 'prototype-slide' || 
+                            slide.type === 'types-header' || slide.type === 'variables-header' || slide.type === 'practice') {
+                            if (currentSlide < slides.length - 1) {
+                                setCurrentSlide(prev => prev + 1);
+                                setRevealedSteps({});
+                            }
+                            return;
+                        }
+                        
+                        let totalSteps = 0;
+                        if (slide.type === 'concept' || slide.type === 'local-variables' || slide.type === 'global-variables') {
+                            totalSteps = slide.points ? slide.points.length : 0;
+                        } else if (slide.type === 'code-with-output') {
+                            totalSteps = slide.revealGroups ? slide.revealGroups.length : 0;
+                        }
+                        
+                        let allRevealed = true;
+                        for (let i = 0; i < totalSteps; i++) {
+                            if (!revealedSteps[`${currentSlide}-${i}`]) {
+                                allRevealed = false;
+                                break;
+                            }
+                        }
+                        
+                        if (allRevealed && totalSteps > 0) {
+                            if (currentSlide < slides.length - 1) {
+                                setCurrentSlide(prev => prev + 1);
+                                setRevealedSteps({});
+                            }
+                        } else {
+                            for (let i = 0; i < totalSteps; i++) {
+                                if (!revealedSteps[`${currentSlide}-${i}`]) {
+                                    setRevealedSteps(prev => ({ ...prev, [`${currentSlide}-${i}`]: true }));
+                                    break;
+                                }
+                            }
+                        }
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        
+                        if (slide.type === 'title' || slide.type === 'thankyou' || slide.type === 'structure' ||
+                            slide.type === 'syntax-triple' || slide.type === 'prototype-slide' || 
+                            slide.type === 'types-header' || slide.type === 'variables-header' || slide.type === 'practice') {
+                            if (currentSlide > 0) {
+                                setCurrentSlide(prev => prev - 1);
+                                setRevealedSteps({});
+                            }
+                            return;
+                        }
+                        
+                        let totalSteps = 0;
+                        if (slide.type === 'concept' || slide.type === 'local-variables' || slide.type === 'global-variables') {
+                            totalSteps = slide.points ? slide.points.length : 0;
+                        } else if (slide.type === 'code-with-output') {
+                            totalSteps = slide.revealGroups ? slide.revealGroups.length : 0;
+                        }
+                        
+                        let anyRevealed = false;
+                        for (let i = 0; i < totalSteps; i++) {
+                            if (revealedSteps[`${currentSlide}-${i}`]) {
+                                anyRevealed = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!anyRevealed && currentSlide > 0) {
+                            setCurrentSlide(prev => prev - 1);
+                            setRevealedSteps({});
+                            return;
+                        }
+                        
+                        for (let i = totalSteps - 1; i >= 0; i--) {
+                            if (revealedSteps[`${currentSlide}-${i}`]) {
+                                const newRevealed = { ...revealedSteps };
+                                delete newRevealed[`${currentSlide}-${i}`];
+                                setRevealedSteps(newRevealed);
+                                break;
+                            }
+                        }
+                    }
+                };
+
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [currentSlide, revealedSteps, slides]);
+
+            const toggleStep = (slideIdx, stepIdx) => {
+                const key = `${slideIdx}-${stepIdx}`;
+                setRevealedSteps(prev => ({ ...prev, [key]: !prev[key] }));
+            };
+
+            const slide = slides[currentSlide];
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex flex-col items-center justify-center p-4">
+                    <div className="bg-white rounded-xl shadow-2xl h-full flex flex-col" style={{ width: '1280px', height: '720px', maxWidth: '95vw', maxHeight: '95vh' }}>
+                        
+                        <div className="flex-1 overflow-auto p-8">
+                            {slide.type === 'title' && (
+                                <div className="h-full flex flex-col items-center justify-center text-center space-y-6">
+                                    <div className="text-blue-600 font-bold text-2xl">{slide.content.courseCode}</div>
+                                    <div className="text-3xl font-semibold text-gray-700">{slide.content.courseTitle}</div>
+                                    <div className="text-6xl font-bold text-gray-900 mt-8">{slide.content.topic}</div>
+                                    <div className="text-3xl font-semibold text-purple-600 mt-2">{slide.content.subtitle}</div>
+                                    <div className="mt-12 text-xl text-gray-600">Instructor: {slide.content.faculty}</div>
+                                </div>
+                            )}
+
+                            {slide.type === 'thankyou' && (
+                                <div className="flex flex-col items-center justify-center h-full text-center">
+                                    <h1 className="text-9xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                                        Thank You
+                                    </h1>
+                                    <p className="text-3xl text-gray-600 mt-8">Keep Coding!</p>
+                                </div>
+                            )}
+
+                            {slide.type === 'concept' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-5 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="bg-yellow-50 border-4 border-yellow-400 rounded-lg p-5 mb-5">
+                                        <p className="text-2xl text-gray-800 font-semibold">{slide.definition}</p>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-2xl font-bold text-purple-700 mb-4">Benefits of Using Functions:</h3>
+                                        <div className="space-y-4">
+                                            {slide.points.map((point, idx) => (
+                                                <div key={idx} className="flex items-start space-x-4">
+                                                    <button
+                                                        onClick={() => toggleStep(currentSlide, idx)}
+                                                        className="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-all"
+                                                    >
+                                                        {revealedSteps[`${currentSlide}-${idx}`] ? <Eye /> : <EyeOff />}
+                                                    </button>
+                                                    <div className={`text-xl transition-all duration-500 ${
+                                                        revealedSteps[`${currentSlide}-${idx}`]
+                                                            ? 'opacity-100 transform translate-x-0'
+                                                            : 'opacity-0 transform -translate-x-4'
+                                                    }`}>
+                                                        <span className="text-blue-600 font-bold mr-3">✓</span>
+                                                        {point}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'structure' && (
+                                <div className="h-full flex flex-col items-center justify-center">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-8 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="space-y-6 max-w-4xl w-full">
+                                        {slide.parts.map((part, idx) => (
+                                            <div key={idx} className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border-4 border-purple-400 shadow-lg">
+                                                <div className="text-3xl font-bold text-purple-700 mb-3">{part.name}</div>
+                                                <div className="text-xl text-gray-700">{part.desc}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'syntax-triple' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-5 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 space-y-5 overflow-auto">
+                                        {slide.sections.map((section, idx) => (
+                                            <div key={idx} className="bg-gray-50 rounded-lg p-5 border-2 border-gray-300">
+                                                <h3 className="text-2xl font-bold text-purple-700 mb-3">{section.title}</h3>
+                                                <div className="bg-gray-900 rounded-lg p-4 mb-3">
+                                                    <pre className="text-yellow-300 font-mono text-lg whitespace-pre-wrap">{section.code}</pre>
+                                                </div>
+                                                <div className="bg-blue-50 rounded-lg p-4 border-2 border-blue-300">
+                                                    <div className="text-sm font-semibold text-blue-800 mb-2">Example:</div>
+                                                    <pre className="text-gray-800 font-mono text-base whitespace-pre-wrap">{section.example}</pre>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'prototype-slide' && (
+                                <div className="h-full flex flex-col items-center justify-center">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-6 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="max-w-4xl w-full space-y-6">
+                                        <div className="bg-yellow-50 border-4 border-yellow-400 rounded-xl p-6">
+                                            <p className="text-2xl text-gray-800 font-semibold">{slide.description}</p>
+                                        </div>
+                                        
+                                        <div className="bg-purple-50 border-4 border-purple-400 rounded-xl p-6">
+                                            <h3 className="text-2xl font-bold text-purple-800 mb-4">Tells compiler about:</h3>
+                                            <div className="space-y-3">
+                                                {slide.points.map((point, idx) => (
+                                                    <div key={idx} className="flex items-center space-x-3 text-xl">
+                                                        <span className="text-purple-600 text-2xl">▸</span>
+                                                        <span className="text-gray-800">{point}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-green-50 border-4 border-green-400 rounded-xl p-6">
+                                            <p className="text-xl text-green-800 font-semibold mb-3">{slide.note}</p>
+                                            <div className="bg-gray-900 rounded-lg p-4">
+                                                <pre className="text-green-400 font-mono text-2xl">{slide.example}</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'types-header' && (
+                                <div className="h-full flex flex-col items-center justify-center text-center">
+                                    <h1 className="text-6xl font-bold text-blue-900 mb-4">{slide.title}</h1>
+                                    <p className="text-3xl text-purple-600 font-semibold">{slide.subtitle}</p>
+                                </div>
+                            )}
+
+                            {slide.type === 'variables-header' && (
+                                <div className="h-full flex flex-col items-center justify-center text-center">
+                                    <h1 className="text-6xl font-bold text-blue-900 mb-4">{slide.title}</h1>
+                                    <p className="text-3xl text-purple-600 font-semibold">{slide.subtitle}</p>
+                                </div>
+                            )}
+
+                            {(slide.type === 'local-variables' || slide.type === 'global-variables') && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-6 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 flex flex-col justify-center space-y-5">
+                                        {slide.points.map((point, idx) => (
+                                            <div key={idx} className="flex items-start space-x-4">
+                                                <button
+                                                    onClick={() => toggleStep(currentSlide, idx)}
+                                                    className="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-green-500 hover:bg-green-600 text-white flex items-center justify-center transition-all"
+                                                >
+                                                    {revealedSteps[`${currentSlide}-${idx}`] ? <Eye /> : <EyeOff />}
+                                                </button>
+                                                <div className={`text-xl transition-all duration-500 ${
+                                                    revealedSteps[`${currentSlide}-${idx}`]
+                                                        ? 'opacity-100 transform translate-x-0'
+                                                        : 'opacity-0 transform -translate-x-4'
+                                                }`}>
+                                                    <span className="text-green-600 font-bold mr-3">•</span>
+                                                    {point}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'code-with-output' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-3xl font-bold text-blue-900 mb-3 border-b-4 border-blue-500 pb-2">
+                                        {slide.title}
+                                    </h2>
+                                        {slide.description && (
+                                        <p className="text-lg text-gray-700 mb-4">
+                                            {slide.description}
+                                        </p>
+                                    )}
+
+                                    <div className="flex-1 grid grid-cols-2 gap-6">
+                                        <div className="bg-gray-900 rounded-xl p-5 overflow-auto">
+                                            <pre className="text-yellow-300 text-lg font-mono whitespace-pre-wrap leading-relaxed">
+                                                {slide.code.map((line, idx) => {
+                                                    let visible = false;
+
+                                                    slide.revealGroups.forEach((grp, gIdx) => {
+                                                        if (revealedSteps[`${currentSlide}-${gIdx}`] && grp.includes(idx)) {
+                                                            visible = true;
+                                                        }
+                                                    });
+
+                                                    return (
+                                                        <span
+                                                            key={idx}
+                                                            style={{
+                                                                opacity: visible ? 1 : 0.15,
+                                                                transition: "opacity 0.4s"
+                                                            }}
+                                                        >
+                                                            {line + "\n"}
+                                                        </span>
+                                                    );
+                                                })}
+                                            </pre>
+                                        </div>
+
+                                        <div className="bg-gray-100 border-2 border-gray-300 rounded-xl p-5">
+                                            <h3 className="text-xl font-bold text-green-700 mb-3">Output:</h3>
+                                            <pre className="text-black text-lg font-mono whitespace-pre-wrap">
+                                                {slide.output}
+                                            </pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'practice' && (
+                                <div className="h-full flex flex-col items-center justify-center space-y-10">
+                                    <h1 className="text-5xl font-bold text-blue-900">
+                                        {slide.title}
+                                    </h1>
+
+                                    <ul className="text-2xl text-gray-800 space-y-4">
+                                        {slide.problems.map((p, idx) => (
+                                            <li key={idx} className="flex items-start space-x-3">
+                                                <span className="text-purple-600 font-bold mt-1">➤</span>
+                                                <span>{p}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="w-full p-4 bg-gray-800 text-gray-200 text-lg flex justify-between">
+                            <span>Slide {currentSlide + 1} / {slides.length}</span>
+                            <span>Use ← → ↓ ↑ or TAB for navigation</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<FunctionsPresentation />, document.getElementById('root'));
+    </script>
+</body>
+</html>
