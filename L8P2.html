@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L8 - Strings & Character Arrays in C</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { margin:0; padding:0; font-family: system-ui, -apple-system, sans-serif; background:#111; }
+        .mini-code {
+            background:#1e1e1e; color:#d4d4d4; padding:16px 22px;
+            border-radius:14px; border:3px solid #444;
+            font-family:'Consolas',monospace; font-size:19px; line-height:1.6;
+            box-shadow:0 6px 18px rgba(0,0,0,0.5); display:inline-block;
+            min-width:540px; margin:16px 0 8px 70px;
+        }
+        .kw { color:#c586c0; }
+        .str { color:#ce9178; }
+        .comment { color:#6a9955; font-style:italic; }
+    </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const Eye = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+    </svg>
+);
+const EyeOff = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+        <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+);
+
+const MiniCode = ({children}) => (
+    <div className="mini-code"><pre><code>{children}</code></pre></div>
+);
+
+const L8 = () => {
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const [revealed, setRevealed] = useState({});
+
+    const slides = [
+        { type: 'title', content: { course: 'EEE 103 - Computer Programming', lecture: 'L8 - Strings/Char Arrays', part: 'Part 2: Strings in C', faculty: 'Sk Tahmed Salim Rafid' }},
+
+        { type: 'concept', title: 'Strings in C', points: [
+            'A string is a character array terminated by null character \'\\0\'',
+            'String literals automatically include the null terminator',
+            'You can access characters using index: str[0], str[1], ...',
+            'Example:'
+          ], code: <MiniCode>char str[6] = "Hello";<br/><span className="comment">// Memory: H e l l o \\0</span></MiniCode>
+        },
+
+        { type: 'statement-intro', title: 'Declaring and Initializing Strings',
+          description: 'Different ways to create strings',
+          syntax: `char name[20];\nchar str[] = "Hello";\nchar msg[6] = "World";\nchar arr[] = {'H','i','!','\\0'};`,
+          explanation: [
+            'char str[] = "text"; → size includes \\0 automatically',
+            'String literals add \\0 at the end',
+            'Manual array needs explicit \\0',
+            'Always reserve space for null terminator'
+          ]
+        },
+
+        { type: 'concept', title: 'Taking String Input', points: [
+            'Never use & with string variables',
+            'scanf("%s", str); → stops at space',
+            'gets() → deprecated and unsafe',
+            'fgets() → safe and recommended'
+          ], codeBlocks: [
+            <MiniCode key="1"><span className="kw">scanf</span>("<span className="str">%s</span>", name);  <span className="comment">// No & needed, can't read spaces</span></MiniCode>,
+           
+            <MiniCode key="3"><span className="kw">gets</span>(line);                 <span className="comment">// Deprecated & unsafe!</span></MiniCode>,
+            <MiniCode key="4"><span className="kw">fgets</span>(line, <span className="kw">sizeof</span>(line), stdin);  <span className="comment">// Safe + reads spaces</span></MiniCode>
+          ]
+        },
+
+        { type: 'concept', title: 'Printing Strings', points: [
+            'Use %s to print full string until \\0',
+            'Print character by character with loop',
+            '%s stops automatically at null terminator'
+          ], codeBlocks: [
+            <MiniCode key="1"><span className="kw">printf</span>("<span className="str">%s</span>", str);  <span className="comment">// Entire string</span></MiniCode>,
+            <MiniCode key="2">for(int i = 0; str[i] != '\0'; i++)<br/>    <span className="kw">printf</span>("<span className="str">%c </span>", str[i]);</MiniCode>
+          ]
+        },
+
+        { type: 'code-with-output', title: 'Count Total Characters', description: 'Loop until \\0',
+          code: ['#include <stdio.h>','int main() {','    char str[100]; int count=0;','    printf("Enter a string: ");','    scanf("%s", str);','    while(str[count] != \'\\0\') count++;','    printf("Total characters: %d\\n", count);','    return 0;','}'],
+          revealGroups:[[0],[1,8],[2],[3,4],[5],[6],[7]], output:'Enter a string: Programming\nTotal characters: 11' },
+
+        { type: 'code-with-output', title: 'Reverse String', description: 'Input: ABCD → Output: DCBA',
+          code: ['#include <stdio.h>','int main() {','    char str[100]; int len=0;','    printf("Enter a string: "); scanf("%s", str);','    while(str[len] != \'\\0\') len++;','    for(int i=len-1; i>=0; i--) printf("%c", str[i]);','    return 0;','}'],
+          revealGroups:[[0],[1,7],[2],[3],[4],[5],[6]], output:'Enter a string: ABCD\nDCBA' },
+
+        { type: 'code-with-output', title: 'Count Words', description: 'Using fgets()',
+          code: ['#include <stdio.h>','int main() {','    char str[200]; int words=1;','    printf("Enter a string: ");','    fgets(str, sizeof(str), stdin);','    for(int i=0; str[i]!=\'\\0\'; i++)','        if(str[i]==\' \') words++;','    printf("Total words: %d\\n", words);','    return 0;','}'],
+          revealGroups:[[0],[1,9],[2],[3,4],[5,6],[7]], output:'Enter a string: This is a test string\nTotal words: 5' },
+
+        { type: 'code-with-output', title: 'Concatenate Strings (Manual)',
+          code: ['#include <stdio.h>','int main() {','    char s1[100], s2[50]; int i=0,j=0;','    printf("First: "); scanf("%s", s1);','    printf("Second: "); scanf("%s", s2);','    while(s1[i] != \'\\0\') i++;','    while(s2[j] != \'\\0\') s1[i++] = s2[j++];','    s1[i] = \'\\0\';','    printf("Result: %s\\n", s1); return 0;','}'],
+          revealGroups:[[0],[1,9],[2],[3,4],[5],[6],[7]], output:'First: Hello\nSecond: World\nResult: HelloWorld' },
+
+        { type: 'code-with-output', title: 'Character Frequency',
+          description: '"This is a test" → \'i\' appears 3 times',
+          code: ['#include <stdio.h>','int main() {','    char str[100], ch; int count=0;','    printf("Enter string: ");','    fgets(str, sizeof(str), stdin);','    printf("Enter character: "); scanf("%c", &ch);','    for(int i=0; str[i]!=\'\\0\'; i++)','        if(str[i]==ch) count++;','    printf("Frequency of \'%c\' = %d\\n", ch, count);','    return 0;','}'],
+          revealGroups:[[0],[1,9],[2],[3,4,5],[6,7],[8]], output:'Enter string: This is a test string\nEnter character: i\nFrequency of \'i\' = 3' },
+
+        { type: 'practice', title: 'Practice Problems', problems: [
+            'Convert string to uppercase','Count word occurrences','Check substring','Extract substring',
+            'Count vowels & consonants','Palindrome check','Remove spaces','Reverse words in sentence'] },
+
+        { type: 'thankyou' }
+    ];
+
+    useEffect(() => {
+        const handleKey = (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'Tab') { e.preventDefault(); if(currentSlide<slides.length-1){setCurrentSlide(s=>s+1);setRevealed({});}}
+            if (e.key === 'ArrowLeft' && currentSlide>0) { setCurrentSlide(s=>s-1); setRevealed({}); }
+            if (e.key === 'b' || e.key === 'B') { e.preventDefault(); const s=slides[currentSlide]; const total=(s.points?.length||s.explanation?.length||s.revealGroups?.length||0)+(s.codeBlocks?.length||0)+(s.code?1:0); const nr={}; for(let i=0;i<total;i++) nr[`${currentSlide}-${i}`]=true; setRevealed(nr); }
+            if (e.key === ' ' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                const s = slides[currentSlide];
+                const base = s.points?.length || s.explanation?.length || s.revealGroups?.length || 0;
+                const extra = (s.codeBlocks?.length||0) + (s.code?1:0);
+                for(let i=0;i<base+extra;i++){
+                    if(!revealed[`${currentSlide}-${i}`]){ setRevealed(r=>({...r,[`${currentSlide}-${i}`]:true})); return; }
+                }
+                if(currentSlide<slides.length-1){setCurrentSlide(s=>s+1);setRevealed({});}
+            }
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                const s = slides[currentSlide];
+                const total = (s.points?.length||s.explanation?.length||s.revealGroups?.length||0)+(s.codeBlocks?.length||0)+(s.code?1:0);
+                for(let i=total-1;i>=0;i--){
+                    if(revealed[`${currentSlide}-${i}`]){ const nr={...revealed}; delete nr[`${currentSlide}-${i}`]; setRevealed(nr); return; }
+                }
+                if(currentSlide>0){setCurrentSlide(s=>s-1);setRevealed({});}
+            }
+        };
+        window.addEventListener('keydown',handleKey);
+        return ()=>window.removeEventListener('keydown',handleKey);
+    }, [currentSlide,revealed]);
+
+    const slide = slides[currentSlide];
+
+    return (
+<div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900 flex items-center justify-center p-6">
+    <div className="bg-white rounded-2xl shadow-3xl w-[1280px] h-[820px] max-w-[96vw] max-h-[96vh] overflow-hidden">
+        <div className="p-10 h-full overflow-auto">
+
+            {slide.type==='title' && (
+                <div className="h-full flex flex-col items-center justify-center text-center gap-8">
+                    <div className="text-blue-700 font-bold text-2xl">{slide.content.course}</div>
+                    <div className="text-5xl font-bold text-gray-800">{slide.content.lecture}</div>
+                    <div className="text-6xl font-extrabold text-gray-900">{slide.content.part}</div>
+                    <div className="text-2xl text-gray-700 mt-6">Prepared by: {slide.content.faculty}</div>
+                </div>
+            )}
+
+            {slide.type==='concept' && (
+                <div className="h-full flex flex-col">
+                    <h2 className="text-5xl font-bold text-blue-900 mb-8 border-b-4 border-blue-500 pb-3 inline-block">{slide.title}</h2>
+                    <div className="flex-1 flex flex-col justify-center gap-8">
+                        {slide.points.map((p,i)=>(
+                            <div key={i} className="flex items-start gap-6">
+                                <button onClick={()=>setRevealed(r=>({...r,[`${currentSlide}-${i}`]:!r[`${currentSlide}-${i}`]}))} className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg hover:bg-blue-700">
+                                    {revealed[`${currentSlide}-${i}`] ? <Eye/> : <EyeOff/>}
+                                </button>
+                                <div className={`text-3xl transition-all duration-700 ${revealed[`${currentSlide}-${i}`]?'opacity-100':'opacity-0 -translate-x-10'}`}>
+                                    <span className="text-blue-600 font-bold mr-3">→</span>{p}
+                                </div>
+                            </div>
+                        ))}
+
+                        {slide.code && revealed[`${currentSlide}-${slide.points.length}`] && (
+                            <div className="transition-all duration-700 opacity-100">{slide.code}</div>
+                        )}
+
+                        {slide.codeBlocks && slide.codeBlocks.map((block,idx)=>(
+                            revealed[`${currentSlide}-${slide.points.length + idx}`] && (
+                                <div key={idx} className="transition-all duration-700 opacity-100">{block}</div>
+                            )
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {slide.type==='statement-intro' && (
+                <div className="h-full flex flex-col">
+                    <h2 className="text-5xl font-bold text-blue-900 mb-6 border-b-4 border-blue-500 pb-3">{slide.title}</h2>
+                    <div className="space-y-8">
+                        <div className="bg-yellow-50 border-4 border-yellow-400 rounded-2xl p-6 text-xl text-gray-800">{slide.description}</div>
+                        <div className="bg-gray-900 rounded-2xl p-6"><pre className="text-gray-100 font-mono text-lg">{slide.syntax}</pre></div>
+                        <div className="bg-blue-50 rounded-2xl p-6 border-4 border-blue-300">
+                            <div className="text-blue-800 font-bold text-2xl mb-4">Key Points:</div>
+                            {slide.explanation.map((e,i)=>(
+                                <div key={i} className="flex items-start gap-5 mb-4">
+                                    <button onClick={()=>setRevealed(r=>({...r,[`${currentSlide}-${i}`]:!r[`${currentSlide}-${i}`]}))} className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center">
+                                        {revealed[`${currentSlide}-${i}`] ? <Eye/> : <EyeOff/>}
+                                    </button>
+                                    <div className={`text-xl text-gray-700 transition-all ${revealed[`${currentSlide}-${i}`]?'opacity-100':'opacity-0'}`}>
+                                        <span className="text-blue-600 mr-2">•</span>{e}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {slide.type==='code-with-output' && (
+                <div className="h-full flex flex-col">
+                    <h2 className="text-4xl font-bold text-blue-900 mb-4 border-b-4 border-blue-500 pb-2">{slide.title}</h2>
+                    {slide.description && <p className="text-lg text-gray-700 mb-6 italic">{slide.description}</p>}
+                    <div className="flex-1 bg-gray-900 rounded-2xl p-6 overflow-auto shadow-xl">
+                        <div className="font-mono text-base">
+                            {slide.code.map((line,li)=>{
+                                const g = slide.revealGroups.findIndex(gr=>gr.includes(li));
+                                const vis = g!==-1 && revealed[`${currentSlide}-${g}`];
+                                return (
+                                    <div key={li} className={`transition-all ${vis?'opacity-100':'opacity-15'}`}>
+                                        <span className="text-gray-500 w-8 inline-block text-right mr-4 text-sm">{li+1}</span>
+                                        <span className={line.includes('//')?'text-green-400':line.includes('#include')?'text-pink-400':line.includes('printf')||line.includes('scanf')||line.includes('fgets')?'text-yellow-300':line.includes('while')||line.includes('for')||line.includes('if')?'text-purple-400':'text-gray-100'}>
+                                            {line||'\u00A0'}
+                                        </span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                    <div className="mt-6 bg-green-900 text-green-100 rounded-2xl p-6">
+                        <div className="font-bold text-xl mb-2">Output:</div>
+                        <pre className="font-mono text-lg">{slide.output}</pre>
+                    </div>
+                </div>
+            )}
+
+            {slide.type==='practice' && (
+                <div className="h-full flex flex-col">
+                    <h2 className="text-5xl font-bold text-blue-900 mb-8 border-b-4 border-blue-500 pb-3">{slide.title}</h2>
+                    <div className="grid grid-cols-2 gap-8 flex-1">
+                        {slide.problems.map((p,i)=>(
+                            <div key={i} className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-8 border-4 border-purple-200 shadow-xl">
+                                <div className="flex items-center gap-6">
+                                    <div className="w-14 h-14 bg-purple-700 text-white rounded-full flex items-center justify-center text-2xl font-bold">{i+1}</div>
+                                    <div className="text-xl font-medium text-gray-800">{p}</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {slide.type==='thankyou' && (
+                <div className="h-full flex items-center justify-center text-center">
+                    <h1 className="text-8xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-8">Thank You!</h1>
+                    <p className="text-3xl text-gray-700"></p>
+                </div>
+            )}
+        </div>
+    </div>
+</div>
+    );
+};
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<L8 />);
+</script>
+</body>
+</html>
