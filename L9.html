@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pointers in C - EEE 103 L4</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        }
+        .code-line {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.8;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse-custom {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        .memory-cell {
+            transition: all 0.3s ease;
+        }
+        .memory-cell:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const Eye = () => (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        );
+
+        const EyeOff = () => (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+        );
+
+        const PointerPresentation = () => {
+            const [currentSlide, setCurrentSlide] = useState(0);
+            const [revealedSteps, setRevealedSteps] = useState({});
+
+            const slides = [
+                {
+                    type: 'title',
+                    content: {
+                        courseCode: 'EEE: 103',
+                        courseTitle: 'Computer Programming',
+                        topic: 'L4: Pointers in C',
+                        faculty: 'Sk Tahmed Salim Rafid'
+                    }
+                },
+                {
+                    type: 'concept',
+                    title: 'What is a Pointer?',
+                    points: [
+                        'A pointer is a variable that stores the memory address of another variable',
+                        'Instead of storing actual values, pointers store locations in memory',
+                        'Pointers allow direct memory access and manipulation',
+                        'Essential for dynamic memory management',
+                        'Used extensively in arrays, functions, and data structures'
+                    ],
+                    visual: true
+                },
+                {
+                    type: 'memory-visual',
+                    title: 'Understanding Memory & Pointers',
+                    description: 'Visual representation of how pointers work in memory'
+                },
+                {
+                    type: 'pointer-declaration',
+                    title: 'Declaring a Pointer',
+                    description: 'To declare a pointer, specify the data type followed by * and the pointer name',
+                    examples: [
+                        { code: 'int *p;', desc: 'p is a pointer to an integer', color: 'blue' },
+                        { code: 'float *fptr;', desc: 'fptr is a pointer to a float', color: 'green' },
+                        { code: 'char *cptr;', desc: 'cptr is a pointer to a char', color: 'purple' }
+                    ],
+                    notes: [
+                        'The type of pointer should match the type of variable it points to',
+                        'The * indicates that the variable is a pointer'
+                    ]
+                },
+                {
+                    type: 'pointer-assignment',
+                    title: 'Assigning a Pointer',
+                    description: 'A pointer should store a memory address, not a direct value',
+                    correctExample: {
+                        code: 'int x = 10;\nint *p;\np = &x;  // Correct: store the address of x in p',
+                        explanation: '& is the address-of operator. It returns the memory address of a variable.'
+                    },
+                    incorrectExample: {
+                        code: 'p = 10;  // Incorrect: assigning a value directly to a pointer',
+                        explanation: 'Never assign a value directly to a pointer!'
+                    }
+                },
+                {
+                    type: 'dereferencing',
+                    title: 'Accessing Value through Pointer',
+                    description: 'To access the value stored at the memory address, use the * operator (dereferencing)',
+                    code: [
+                        'int x = 10;',
+                        'int *p = &x;',
+                        '',
+                        'printf("%p", p);   // Prints address (e.g., 0x7fff5fbff8ac)',
+                        'printf("%d", *p);  // Prints value: 10'
+                    ],
+                    revealGroups: [[0], [1], [2,3,4]],
+                    keyPoints: [
+                        'Printing the pointer itself shows the memory address',
+                        'Printing *p gives the value stored at that address',
+                        'The * operator is used for dereferencing'
+                    ]
+                },
+                {
+                    type: 'common-mistakes',
+                    title: 'Common Mistakes to Avoid',
+                    mistakes: [
+                        { 
+                            mistake: 'Assigning a value to a pointer instead of an address',
+                            wrong: 'int *p = 10;',
+                            right: 'int x = 10; int *p = &x;'
+                        },
+                        { 
+                            mistake: 'Dereferencing an uninitialized pointer',
+                            wrong: 'int *p;\nprintf("%d", *p); // Segmentation fault!',
+                            right: 'int x = 10;\nint *p = &x;\nprintf("%d", *p);'
+                        },
+                        { 
+                            mistake: 'Confusing pointer and *pointer while printing',
+                            wrong: 'printf("%d", p); // Prints address as integer',
+                            right: 'printf("%p", p); // Address\nprintf("%d", *p); // Value'
+                        }
+                    ]
+                },
+                {
+                    type: 'pointer-input',
+                    title: 'Taking Input using Pointers',
+                    description: 'You can take input directly into the variable pointed to by a pointer',
+                    code: [
+                        '#include <stdio.h>',
+                        '',
+                        'int main() {',
+                        '    int num;',
+                        '    int *p = &num;',
+                        '    ',
+                        '    printf("Enter a number: ");',
+                        '    scanf("%d", p);  // equivalent to scanf("%d", &num)',
+                        '    ',
+                        '    printf("You entered: %d\\n", *p);',
+                        '    return 0;',
+                        '}'
+                    ],
+                    revealGroups: [[0,1,2,11], [3,4], [5,6,7], [8,9,10]],
+                    note: 'Notice: We use p (not &p) because p already contains the address!'
+                },
+                {
+                    type: 'code-example',
+                    title: 'Example 1: Subtract Two Numbers Using Pointers',
+                    description: 'Subtract the smaller number from the larger one',
+                    code: [
+                        '#include <stdio.h>',
+                        '',
+                        'int main() {',
+                        '    int a, b;',
+                        '    int *p1 = &a, *p2 = &b;',
+                        '    ',
+                        '    printf("Enter two numbers: ");',
+                        '    scanf("%d %d", p1, p2);',
+                        '    ',
+                        '    int diff;',
+                        '    if (*p1 > *p2)',
+                        '        diff = *p1 - *p2;',
+                        '    else',
+                        '        diff = *p2 - *p1;',
+                        '    ',
+                        '    printf("Difference (larger - smaller) = %d\\n", diff);',
+                        '    return 0;',
+                        '}'
+                    ],
+                    output: 'Enter two numbers: 25 15\nDifference (larger - smaller) = 10',
+                    revealGroups: [[0,1,2,17], [3,4], [5,6,7], [8,9,10,11,12,13], [14,15,16]]
+                },
+                {
+                    type: 'array-pointer-visual',
+                    title: 'Arrays and Pointers',
+                    description: 'Understanding the relationship between arrays and pointers'
+                },
+                {
+                    type: 'code-example',
+                    title: 'Example 2: Printing Array Using Pointer',
+                    description: 'Traverse and print array elements using pointer arithmetic',
+                    code: [
+                        '#include <stdio.h>',
+                        '',
+                        'int main() {',
+                        '    // 1. Declare and initialize an integer array',
+                        '    int data[5] = {10, 20, 30, 40, 50};',
+                        '    ',
+                        '    // 2. Declare a pointer to the base address',
+                        '    int *ptr = data; // data is equivalent to &data[0]',
+                        '    ',
+                        '    printf("Printing array elements using pointer:\\n");',
+                        '    ',
+                        '    // 3. Loop through array using pointer arithmetic',
+                        '    for (int i = 0; i < 5; ++i) {',
+                        '        printf("Element %d: %d\\n", i, *(ptr + i));',
+                        '    }',
+                        '',
+                        '    return 0;',
+                        '}'
+                    ],
+                    output: 'Element 0: 10\nElement 1: 20\nElement 2: 30\nElement 3: 40\nElement 4: 50',
+                    revealGroups: [[0,1,2,16], [3,4], [5,6,7], [8,9], [10,11,12,13], [14,15]],
+                    keyPoints: [
+                        'data gives the base address of the array',
+                        '*(ptr + i) dereferences the pointer at element i',
+                        'Pointer arithmetic: ptr + i moves i positions forward'
+                    ]
+                },
+                {
+                    type: 'pointer-arithmetic',
+                    title: 'Pointer Arithmetic',
+                    operations: [
+                        { 
+                            op: 'ptr + n',
+                            desc: 'Move n elements forward',
+                            example: 'int arr[5] = {10,20,30,40,50};\nint *p = arr;\n*(p + 2) gives 30'
+                        },
+                        { 
+                            op: 'ptr - n',
+                            desc: 'Move n elements backward',
+                            example: 'int *p = &arr[4];\n*(p - 2) gives 30'
+                        },
+                        { 
+                            op: 'ptr++',
+                            desc: 'Move to next element',
+                            example: 'int *p = arr;\np++; // now points to arr[1]'
+                        },
+                        { 
+                            op: 'ptr--',
+                            desc: 'Move to previous element',
+                            example: 'int *p = &arr[2];\np--; // now points to arr[1]'
+                        }
+                    ]
+                },
+                {
+                    type: 'summary',
+                    title: 'Summary: Key Takeaways',
+                    points: [
+                        'A pointer stores the address of a variable',
+                        'Use & to get the address of a variable',
+                        'Use * to dereference a pointer and access/change the value',
+                        'Pointer arithmetic allows efficient array traversal',
+                        'Always initialize pointers before dereferencing to avoid errors',
+                        'Array names are pointers to their first element',
+                        'Pointers enable dynamic memory management and data structures'
+                    ]
+                },
+                {
+                    type: 'practice',
+                    title: 'Practice Problems',
+                    problems: [
+                        'Write a program to swap two numbers using pointers',
+                        'Create a program that finds the largest element in an array using pointers',
+                        'Write a program to reverse an array using pointer arithmetic',
+                        'Implement a function that takes a pointer and modifies the value it points to',
+                        'Create a program that uses pointers to calculate the sum of array elements'
+                    ]
+                },
+                {
+                    type: 'thankyou'
+                }
+            ];
+
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === 'b' || e.key === 'B') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        const newRevealed = { ...revealedSteps };
+                        
+                        if (slide.type === 'concept' || slide.type === 'summary') {
+                            for (let i = 0; i < slide.points.length; i++) {
+                                newRevealed[`${currentSlide}-${i}`] = true;
+                            }
+                        } else if (slide.type === 'dereferencing' || slide.type === 'pointer-input' || slide.type === 'code-example') {
+                            for (let i = 0; i < slide.revealGroups.length; i++) {
+                                newRevealed[`${currentSlide}-${i}`] = true;
+                            }
+                        }
+                        
+                        setRevealedSteps(newRevealed);
+                    } else if (e.key === 'Tab') {
+                        e.preventDefault();
+                        if (currentSlide < slides.length - 1) {
+                            setCurrentSlide(prev => prev + 1);
+                            setRevealedSteps({});
+                        }
+                    } else if (e.key === 'ArrowRight') {
+                        setCurrentSlide(prev => Math.min(slides.length - 1, prev + 1));
+                        setRevealedSteps({});
+                    } else if (e.key === 'ArrowLeft') {
+                        setCurrentSlide(prev => Math.max(0, prev - 1));
+                        setRevealedSteps({});
+                    } else if (e.key === 'ArrowDown' || e.key === ' ') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        
+                        if (slide.type === 'title' || slide.type === 'thankyou' || slide.type === 'pointer-declaration' || 
+                            slide.type === 'pointer-assignment' || slide.type === 'common-mistakes' || 
+                            slide.type === 'memory-visual' || slide.type === 'array-pointer-visual' ||
+                            slide.type === 'pointer-arithmetic' || slide.type === 'practice') {
+                            if (currentSlide < slides.length - 1) {
+                                setCurrentSlide(prev => prev + 1);
+                                setRevealedSteps({});
+                            }
+                            return;
+                        }
+                        
+                        let totalSteps = 0;
+                        if (slide.type === 'concept' || slide.type === 'summary') totalSteps = slide.points.length;
+                        else if (slide.type === 'dereferencing' || slide.type === 'pointer-input' || slide.type === 'code-example') totalSteps = slide.revealGroups.length;
+                        
+                        let allRevealed = true;
+                        for (let i = 0; i < totalSteps; i++) {
+                            if (!revealedSteps[`${currentSlide}-${i}`]) {
+                                allRevealed = false;
+                                break;
+                            }
+                        }
+                        
+                        if (allRevealed && totalSteps > 0) {
+                            if (currentSlide < slides.length - 1) {
+                                setCurrentSlide(prev => prev + 1);
+                                setRevealedSteps({});
+                            }
+                        } else {
+                            for (let i = 0; i < totalSteps; i++) {
+                                if (!revealedSteps[`${currentSlide}-${i}`]) {
+                                    setRevealedSteps(prev => ({ ...prev, [`${currentSlide}-${i}`]: true }));
+                                    break;
+                                }
+                            }
+                        }
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        
+                        if (slide.type === 'title' || slide.type === 'thankyou' || slide.type === 'pointer-declaration' ||
+                            slide.type === 'pointer-assignment' || slide.type === 'common-mistakes' ||
+                            slide.type === 'memory-visual' || slide.type === 'array-pointer-visual' ||
+                            slide.type === 'pointer-arithmetic' || slide.type === 'practice') {
+                            if (currentSlide > 0) {
+                                setCurrentSlide(prev => prev - 1);
+                                setRevealedSteps({});
+                            }
+                            return;
+                        }
+                        
+                        let totalSteps = 0;
+                        if (slide.type === 'concept' || slide.type === 'summary') totalSteps = slide.points.length;
+                        else if (slide.type === 'dereferencing' || slide.type === 'pointer-input' || slide.type === 'code-example') totalSteps = slide.revealGroups.length;
+                        
+                        let anyRevealed = false;
+                        for (let i = 0; i < totalSteps; i++) {
+                            if (revealedSteps[`${currentSlide}-${i}`]) {
+                                anyRevealed = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!anyRevealed && currentSlide > 0) {
+                            setCurrentSlide(prev => prev - 1);
+                            setRevealedSteps({});
+                            return;
+                        }
+                        
+                        for (let i = totalSteps - 1; i >= 0; i--) {
+                            if (revealedSteps[`${currentSlide}-${i}`]) {
+                                const newRevealed = { ...revealedSteps };
+                                delete newRevealed[`${currentSlide}-${i}`];
+                                setRevealedSteps(newRevealed);
+                                break;
+                            }
+                        }
+                    }
+                };
+
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [currentSlide, revealedSteps, slides]);
+
+            const toggleStep = (slideIdx, stepIdx) => {
+                const key = `${slideIdx}-${stepIdx}`;
+                setRevealedSteps(prev => ({ ...prev, [key]: !prev[key] }));
+            };
+
+            const slide = slides[currentSlide];
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-blue-900 flex flex-col items-center justify-center p-4">
+                    <div className="bg-white rounded-xl shadow-2xl h-full flex flex-col" style={{ width: '1280px', height: '720px', maxWidth: '95vw', maxHeight: '95vh' }}>
+                        
+                        <div className="flex-1 overflow-auto p-8">
+                            {slide.type === 'title' && (
+                                <div className="h-full flex flex-col items-center justify-center text-center space-y-6">
+                                    <div className="text-blue-600 font-bold text-2xl">{slide.content.courseCode}</div>
+                                    <div className="text-3xl font-semibold text-gray-700">{slide.content.courseTitle}</div>
+                                    <div className="text-6xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mt-8">
+                                        {slide.content.topic}
+                                    </div>
+                                    <div className="text-4xl mt-6">🎯</div>
+                                    <div className="mt-12 text-xl text-gray-600">Prepared by: {slide.content.faculty}</div>
+                                </div>
+                            )}
+
+                            {slide.type === 'thankyou' && (
+                                <div className="flex flex-col items-center justify-center h-full text-center">
+                                    <h1 className="text-9xl font-extrabold bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                                        Thank You
+                                    </h1>
+                                    <p className="text-3xl text-gray-600 mt-8">Master Pointers, Master C! 🚀</p>
+                                </div>
+                            )}
+
+                            {slide.type === 'concept' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-purple-900 mb-6 border-b-4 border-purple-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 flex flex-col justify-center space-y-5">
+                                        {slide.points.map((point, idx) => (
+                                            <div key={idx} className="flex items-start space-x-4">
+                                                <button
+                                                    onClick={() => toggleStep(currentSlide, idx)}
+                                                    className="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-purple-500 hover:bg-purple-600 text-white flex items-center justify-center transition-all"
+                                                >
+                                                    {revealedSteps[`${currentSlide}-${idx}`] ? <Eye /> : <EyeOff />}
+                                                </button>
+                                                <div className={`text-xl transition-all duration-500 ${
+                                                    revealedSteps[`${currentSlide}-${idx}`]
+                                                        ? 'opacity-100 transform translate-x-0'
+                                                        : 'opacity-0 transform -translate-x-4'
+                                                }`}>
+                                                    <span className="text-purple-600 font-bold mr-3">▸</span>
+                                                    {point}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'memory-visual' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-purple-900 mb-4 border-b-4 border-purple-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <p className="text-lg text-gray-600 mb-6 italic">{slide.description}</p>
+                                    <div className="flex-1 flex items-center justify-center">
+                                        <div className="grid grid-cols-2 gap-12 w-full max-w-5xl">
+                                            <div className="space-y-6">
+                                                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border-4 border-blue-400">
+                                                    <h3 className="text-2xl font-bold text-blue-800 mb-4">Variable in Memory</h3>
+                                                    <div className="bg-white rounded-lg p-4 border-2 border-blue-300">
+                                                        <div className="font-mono text-lg font-semibold mb-2">int x = 10;</div>
+                                                        <div className="flex items-center justify-between mt-4">
+                                                            <div className="text-center">
+                                                                <div className="text-sm text-gray-600">Variable Name</div>
+                                                                <div className="bg-blue-500 text-white px-4 py-2 rounded font-bold mt-1">x</div>
+                                                            </div>
+                                                            <div className="text-3xl">→</div>
+                                                            <div className="text-center">
+                                                                <div className="text-sm text-gray-600">Memory Address</div>
+                                                                <div className="bg-purple-500 text-white px-3 py-2 rounded font-mono text-sm mt-1">0x7fff5fc8</div>
+                                                            </div>
+                                                            <div className="text-3xl">→</div>
+                                                            <div className="text-center">
+                                                                <div className="text-sm text-gray-600">Value Stored</div>
+                                                                <div className="bg-green-500 text-white px-4 py-2 rounded font-bold text-2xl mt-1">10</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="space-y-6">
+                                                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border-4 border-purple-400">
+                                                    <h3 className="text-2xl font-bold text-purple-800 mb-4">Pointer to Variable</h3>
+                                                    <div className="bg-white rounded-lg p-4 border-2 border-purple-300">
+                                                        <div className="font-mono text-lg font-semibold mb-2">int *p = &x;</div>
+                                                        <div className="flex items-center justify-between mt-4">
+                                                            <div className="text-center">
+                                                                <div className="text-sm text-gray-600">Pointer Name</div>
+                                                                <div className="bg-purple-500 text-white px-4 py-2 rounded font-bold mt-1">p</div>
+                                                            </div>
+                                                            <div className="text-3xl">→</div>
+                                                            <div className="text-center">
+                                                                <div className="text-sm text-gray-600">Stores Address</div>
+                                                                <div className="bg-orange-500 text-white px-3 py-2 rounded font-mono text-sm mt-1 animate-pulse-custom">0x7fff5fc8</div>
+                                                            </div>
+                                                            <div className="text-3xl">→</div>
+                                                            <div className="text-center">
+                                                                <div className="text-sm text-gray-600">Points to Value</div>
+                                                                <div className="bg-green-500 text-white px-4 py-2 rounded font-bold text-2xl mt-1">10</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-6 bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
+                                        <p className="text-lg font-semibold text-gray-800">
+                                            <span className="text-yellow-600">💡 Key Insight:</span> The pointer 'p' doesn't hold the value 10 directly. 
+                                            It holds the address where 10 is stored!
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'pointer-declaration' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-purple-900 mb-4 border-b-4 border-purple-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <p className="text-xl text-gray-600 mb-6 italic">{slide.description}</p>
+                                    <div className="flex-1 flex flex-col justify-center space-y-6">
+                                        {slide.examples.map((ex, idx) => (
+                                            <div key={idx} className={`p-6 rounded-xl border-4 ${
+                                                ex.color === 'blue' ? 'bg-blue-50 border-blue-400' :
+                                                ex.color === 'green' ? 'bg-green-50 border-green-400' :
+                                                'bg-purple-50 border-purple-400'
+                                            }`}>
+                                                <div className="font-mono text-3xl font-bold text-gray-800 mb-3">{ex.code}</div>
+                                                <div className="text-xl text-gray-700">{ex.desc}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="mt-6 grid grid-cols-2 gap-4">
+                                        {slide.notes.map((note, idx) => (
+                                            <div key={idx} className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
+                                                <p className="text-lg font-semibold text-gray-700">
+                                                    <span className="text-yellow-600 mr-2">📌</span>{note}
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'pointer-assignment' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-purple-900 mb-4 border-b-4 border-purple-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <p className="text-xl text-gray-600 mb-6 italic">{slide.description}</p>
+                                    <div className="flex-1 grid grid-cols-2 gap-6">
+                                        <div className="bg-green-50 rounded-xl p-6 border-4 border-green-400">
+                                            <div className="flex items-center space-x-3 mb-4">
+                                                <span className="text-5xl">✓</span>
+                                                <h3 className="text-3xl font-bold text-green-800">Correct Way</h3>
+                                            </div>
+                                            <div className="bg-white rounded-lg p-5 border-2 border-green-300">
+                                                <div className="font-mono text-xl text-gray-800 whitespace-pre-wrap mb-4 font-semibold">{slide.correctExample.code}</div>
+                                                <div className="text-lg text-gray-700 bg-green-100 p-3 rounded">{slide.correctExample.explanation}</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="bg-red-50 rounded-xl p-6 border-4 border-red-400">
+                                            <div className="flex items-center space-x-3 mb-4">
+                                                <span className="text-5xl">✗</span>
+                                                <h3 className="text-3xl font-bold text-red-800">Wrong Way</h3>
+                                            </div>
+                                            <div className="bg-white rounded-lg p-5 border-2 border-red-300">
+                                                <div className="font-mono text-xl text-gray-800 mb-4 font-semibold">{slide.incorrectExample.code}</div>
+                                                <div className="text-lg text-gray-700 bg-red-100 p-3 rounded">{slide.incorrectExample.explanation}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'dereferencing' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-purple-900 mb-4 border-b-4 border-purple-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <p className="text-xl text-gray-600 mb-6 italic">{slide.description}</p>
+                                    <div className="flex-1 grid grid-cols-2 gap-6">
+                                        <div className="flex flex-col">
+                                            <div className="flex-1 bg-gray-900 rounded-lg p-5 overflow-auto">
+                                                <div className="font-mono text-lg">
+                                                    {slide.code.map((line, lineIdx) => {
+                                                        const groupIdx = slide.revealGroups.findIndex(group => group.includes(lineIdx));
+                                                        const isRevealed = groupIdx !== -1 && revealedSteps[`${currentSlide}-${groupIdx}`];
+                                                        
+                                                        return (
+                                                            <div key={lineIdx} className={`code-line transition-all duration-300 ${
+                                                                isRevealed ? 'opacity-100' : 'opacity-20'
+                                                            }`}>
+                                                                <span className="text-gray-500 select-none mr-4 inline-block w-8 text-right text-sm">
+                                                                    {lineIdx + 1}
+                                                                </span>
+                                                                <span className={`${
+                                                                    line.includes('//') ? 'text-green-400' :
+                                                                    line.includes('int') ? 'text-blue-400' :
+                                                                    line.includes('printf') ? 'text-yellow-300' :
+                                                                    'text-gray-100'
+                                                                }`}>
+                                                                    {line || '\u00A0'}
+                                                                </span>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                                <div className="mt-4 flex flex-wrap gap-2">
+                                                    {slide.revealGroups.map((group, idx) => (
+                                                        <button
+                                                            key={idx}
+                                                            onClick={() => toggleStep(currentSlide, idx)}
+                                                            className={`px-3 py-1.5 rounded text-sm font-semibold transition-all ${
+                                                                revealedSteps[`${currentSlide}-${idx}`]
+                                                                    ? 'bg-green-500 text-white'
+                                                                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                                            }`}
+                                                        >
+                                                            Step {idx + 1}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col justify-center space-y-4">
+                                            <h3 className="text-2xl font-bold text-purple-700 mb-2">Key Points:</h3>
+                                            {slide.keyPoints.map((point, idx) => (
+                                                <div key={idx} className="bg-purple-50 border-l-4 border-purple-500 p-4 rounded-lg">
+                                                    <p className="text-lg text-gray-800">{point}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'common-mistakes' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-red-900 mb-6 border-b-4 border-red-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 overflow-auto space-y-6">
+                                        {slide.mistakes.map((item, idx) => (
+                                            <div key={idx} className="bg-red-50 rounded-xl p-6 border-4 border-red-300">
+                                                <h3 className="text-2xl font-bold text-red-800 mb-4 flex items-center">
+                                                    <span className="text-3xl mr-3">⚠️</span>
+                                                    {item.mistake}
+                                                </h3>
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="bg-white rounded-lg p-4 border-2 border-red-400">
+                                                        <div className="text-lg font-bold text-red-700 mb-2">❌ Wrong:</div>
+                                                        <div className="font-mono text-base text-gray-800 whitespace-pre-wrap">{item.wrong}</div>
+                                                    </div>
+                                                    <div className="bg-white rounded-lg p-4 border-2 border-green-400">
+                                                        <div className="text-lg font-bold text-green-700 mb-2">✓ Right:</div>
+                                                        <div className="font-mono text-base text-gray-800 whitespace-pre-wrap">{item.right}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'pointer-input' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-purple-900 mb-4 border-b-4 border-purple-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <p className="text-xl text-gray-600 mb-6 italic">{slide.description}</p>
+                                    <div className="flex-1 flex flex-col">
+                                        <div className="flex-1 bg-gray-900 rounded-lg p-5 overflow-auto">
+                                            <div className="font-mono text-base">
+                                                {slide.code.map((line, lineIdx) => {
+                                                    const groupIdx = slide.revealGroups.findIndex(group => group.includes(lineIdx));
+                                                    const isRevealed = groupIdx !== -1 && revealedSteps[`${currentSlide}-${groupIdx}`];
+                                                    
+                                                    return (
+                                                        <div key={lineIdx} className={`code-line transition-all duration-300 ${
+                                                            isRevealed ? 'opacity-100' : 'opacity-20'
+                                                        }`}>
+                                                            <span className="text-gray-500 select-none mr-4 inline-block w-8 text-right text-sm">
+                                                                {lineIdx + 1}
+                                                            </span>
+                                                            <span className={`${
+                                                                line.includes('//') ? 'text-green-400' :
+                                                                line.includes('#include') ? 'text-pink-400' :
+                                                                line.includes('int') ? 'text-blue-400' :
+                                                                line.includes('printf') || line.includes('scanf') ? 'text-yellow-300' :
+                                                                'text-gray-100'
+                                                            }`}>
+                                                                {line || '\u00A0'}
+                                                            </span>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                            <div className="mt-4 flex flex-wrap gap-2">
+                                                {slide.revealGroups.map((group, idx) => (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => toggleStep(currentSlide, idx)}
+                                                        className={`px-3 py-1.5 rounded text-sm font-semibold transition-all ${
+                                                            revealedSteps[`${currentSlide}-${idx}`]
+                                                                ? 'bg-green-500 text-white'
+                                                                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                                        }`}
+                                                    >
+                                                        Step {idx + 1}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
+                                            <p className="text-lg font-semibold text-gray-800">
+                                                <span className="text-yellow-600">💡 Important:</span> {slide.note}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'code-example' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-3xl font-bold text-purple-900 mb-3 border-b-4 border-purple-500 pb-2">
+                                        {slide.title}
+                                    </h2>
+                                    {slide.description && (
+                                        <p className="text-lg text-gray-600 mb-4 italic">{slide.description}</p>
+                                    )}
+                                    <div className="flex-1 grid grid-cols-3 gap-4">
+                                        <div className="col-span-2 flex flex-col">
+                                            <div className="flex-1 bg-gray-900 rounded-lg p-4 overflow-auto">
+                                                <div className="font-mono text-sm">
+                                                    {slide.code.map((line, lineIdx) => {
+                                                        const groupIdx = slide.revealGroups.findIndex(group => group.includes(lineIdx));
+                                                        const isRevealed = groupIdx !== -1 && revealedSteps[`${currentSlide}-${groupIdx}`];
+                                                        
+                                                        return (
+                                                            <div key={lineIdx} className={`code-line transition-all duration-300 ${
+                                                                isRevealed ? 'opacity-100' : 'opacity-20'
+                                                            }`}>
+                                                                <span className="text-gray-500 select-none mr-4 inline-block w-8 text-right text-xs">
+                                                                    {lineIdx + 1}
+                                                                </span>
+                                                                <span className={`${
+                                                                    line.includes('//') ? 'text-green-400' :
+                                                                    line.includes('#include') ? 'text-pink-400' :
+                                                                    line.includes('int') || line.includes('main') ? 'text-blue-400' :
+                                                                    line.includes('printf') || line.includes('scanf') ? 'text-yellow-300' :
+                                                                    line.includes('if') || line.includes('else') || line.includes('for') ? 'text-purple-400' :
+                                                                    'text-gray-100'
+                                                                }`}>
+                                                                    {line || '\u00A0'}
+                                                                </span>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                                <div className="mt-3 flex flex-wrap gap-2">
+                                                    {slide.revealGroups.map((group, idx) => (
+                                                        <button
+                                                            key={idx}
+                                                            onClick={() => toggleStep(currentSlide, idx)}
+                                                            className={`px-2 py-1 rounded text-xs font-semibold transition-all ${
+                                                                revealedSteps[`${currentSlide}-${idx}`]
+                                                                    ? 'bg-green-500 text-white'
+                                                                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                                            }`}
+                                                        >
+                                                            Step {idx + 1}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col space-y-3">
+                                            <div className="bg-green-900 text-green-100 rounded-lg p-4 flex-1">
+                                                <div className="font-semibold text-lg mb-2">Output:</div>
+                                                <div className="font-mono text-sm whitespace-pre-wrap">{slide.output}</div>
+                                            </div>
+                                            {slide.keyPoints && (
+                                                <div className="bg-blue-50 rounded-lg p-4 border-2 border-blue-300">
+                                                    <div className="font-semibold text-lg mb-2 text-blue-800">Key Points:</div>
+                                                    <ul className="space-y-1">
+                                                        {slide.keyPoints.map((point, idx) => (
+                                                            <li key={idx} className="text-sm text-gray-700">• {point}</li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'array-pointer-visual' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-purple-900 mb-4 border-b-4 border-purple-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <p className="text-lg text-gray-600 mb-6 italic">{slide.description}</p>
+                                    <div className="flex-1 flex flex-col items-center justify-center space-y-8">
+                                        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-8 border-4 border-blue-400 w-full max-w-5xl">
+                                            <div className="font-mono text-2xl font-bold text-gray-800 mb-6 text-center">
+                                                int data[5] = {'{10, 20, 30, 40, 50}'};
+                                            </div>
+                                            <div className="flex justify-center space-x-4 mb-6">
+                                                {[10, 20, 30, 40, 50].map((val, idx) => (
+                                                    <div key={idx} className="memory-cell">
+                                                        <div className="bg-white border-4 border-blue-500 rounded-lg p-4 text-center">
+                                                            <div className="text-sm text-gray-600 mb-2">data[{idx}]</div>
+                                                            <div className="text-3xl font-bold text-blue-700">{val}</div>
+                                                            <div className="text-xs text-gray-500 mt-2 font-mono">0x100{idx}</div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="mt-8 space-y-4">
+                                                <div className="bg-white rounded-lg p-5 border-2 border-purple-300">
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="font-mono text-xl font-semibold text-purple-700">int *ptr = data;</div>
+                                                        <div className="text-gray-600">→</div>
+                                                        <div className="text-lg text-gray-700">ptr points to data[0]</div>
+                                                    </div>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="bg-green-50 rounded-lg p-4 border-2 border-green-400">
+                                                        <div className="font-mono text-lg font-semibold text-green-700 mb-2">*(ptr + 0) = 10</div>
+                                                        <div className="text-sm text-gray-600">Access first element</div>
+                                                    </div>
+                                                    <div className="bg-green-50 rounded-lg p-4 border-2 border-green-400">
+                                                        <div className="font-mono text-lg font-semibold text-green-700 mb-2">*(ptr + 2) = 30</div>
+                                                        <div className="text-sm text-gray-600">Access third element</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded max-w-5xl w-full">
+                                            <p className="text-lg font-semibold text-gray-800">
+                                                <span className="text-yellow-600">💡 Remember:</span> Array name 'data' is equivalent to &data[0] - 
+                                                it's a pointer to the first element!
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'pointer-arithmetic' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-purple-900 mb-6 border-b-4 border-purple-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 grid grid-cols-2 gap-6">
+                                        {slide.operations.map((op, idx) => (
+                                            <div key={idx} className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-4 border-blue-400">
+                                                <div className="flex items-center space-x-4 mb-4">
+                                                    <div className="bg-purple-600 text-white rounded-lg px-6 py-3 font-mono text-3xl font-bold">
+                                                        {op.op}
+                                                    </div>
+                                                    <div className="text-2xl font-bold text-gray-800">{op.desc}</div>
+                                                </div>
+                                                <div className="bg-white rounded-lg p-4 border-2 border-purple-300">
+                                                    <div className="text-sm font-semibold text-gray-600 mb-2">Example:</div>
+                                                    <div className="font-mono text-base text-gray-800 whitespace-pre-wrap">{op.example}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'summary' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-purple-900 mb-6 border-b-4 border-purple-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 flex flex-col justify-center space-y-5">
+                                        {slide.points.map((point, idx) => (
+                                            <div key={idx} className="flex items-start space-x-4">
+                                                <button
+                                                    onClick={() => toggleStep(currentSlide, idx)}
+                                                    className="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-purple-500 hover:bg-purple-600 text-white flex items-center justify-center transition-all"
+                                                >
+                                                    {revealedSteps[`${currentSlide}-${idx}`] ? <Eye /> : <EyeOff />}
+                                                </button>
+                                                <div className={`text-xl transition-all duration-500 ${
+                                                    revealedSteps[`${currentSlide}-${idx}`]
+                                                        ? 'opacity-100 transform translate-x-0'
+                                                        : 'opacity-0 transform -translate-x-4'
+                                                }`}>
+                                                    <span className="text-purple-600 font-bold mr-3">✓</span>
+                                                    {point}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'practice' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-purple-900 mb-5 border-b-4 border-purple-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 overflow-auto">
+                                        <div className="space-y-4">
+                                            {slide.problems.map((problem, idx) => (
+                                                <div key={idx} className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-5 border-3 border-purple-300 shadow-lg hover:shadow-xl transition-shadow">
+                                                    <div className="flex items-start space-x-4">
+                                                        <div className="flex-shrink-0 w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-xl">
+                                                            {idx + 1}
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <p className="text-lg font-semibold text-gray-800">{problem}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<PointerPresentation />);
+    </script>
+</body>
+</html>
