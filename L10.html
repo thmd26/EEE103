@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Memory Allocation in C - EEE 103 L10</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        }
+        .code-line {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.8;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+        .memory-block {
+            transition: all 0.3s ease;
+        }
+        .memory-block:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const Eye = () => (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        );
+
+        const EyeOff = () => (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+        );
+
+        const DynamicMemoryPresentation = () => {
+            const [currentSlide, setCurrentSlide] = useState(0);
+            const [revealedSteps, setRevealedSteps] = useState({});
+
+            const slides = [
+                {
+                    type: 'title',
+                    content: {
+                        courseCode: 'EEE: 103',
+                        courseTitle: 'Computer Programming',
+                        topic: 'L10: Dynamic Memory Allocation',
+                        faculty: 'Sk Tahmed Salim Rafid'
+                    }
+                },
+                {
+                    type: 'problem-statement',
+                    title: 'Why Dynamic Memory Allocation?',
+                    problem: {
+                        title: 'The Problem with Fixed-Size Arrays',
+                        scenario: 'If you want to store details of 5 students, you create:',
+                        code: 'int students[5];',
+                        question: 'But what if later you need to store 6 students?'
+                    },
+                    issues: [
+                        'You cannot increase the size of this array',
+                        'You must create a new array',
+                        'Then copy each element one by one',
+                        'This is inefficient and inconvenient'
+                    ]
+                },
+                {
+                    type: 'solution',
+                    title: 'Dynamic Memory Allocation - The Solution',
+                    benefits: [
+                        { icon: '⚡', title: 'Allocated at runtime', desc: 'Memory size determined during program execution' },
+                        { icon: '📏', title: 'Resized when needed', desc: 'Increase or decrease memory as required' },
+                        { icon: '♻️', title: 'Freed when no longer required', desc: 'Efficient memory management' }
+                    ]
+                },
+                {
+                    type: 'memory-visual',
+                    title: 'Stack vs Heap Memory',
+                    description: 'Understanding where different types of memory are stored'
+                },
+                {
+                    type: 'concept',
+                    title: 'Role of Pointers in Dynamic Memory',
+                    points: [
+                        'When memory is dynamically allocated, it is created in the heap',
+                        'The allocation function returns the address of the allocated memory',
+                        'Pointers are required to store and access dynamically allocated memory',
+                        'Without pointers, we cannot work with dynamic memory',
+                        'The pointer holds the starting address of the allocated block'
+                    ]
+                },
+                {
+                    type: 'malloc-intro',
+                    title: 'malloc() - Memory Allocation',
+                    headerFile: '#include <stdlib.h>',
+                    purpose: [
+                        'malloc() stands for "memory allocation"',
+                        'Used to allocate a block of memory during runtime',
+                        'Returns a pointer to the first byte of allocated memory',
+                        'The memory is uninitialized (contains garbage values)'
+                    ],
+                    syntax: {
+                        code: 'data_type *pointer_name = (data_type *)malloc(size_in_bytes);',
+                        notes: [
+                            'Typecasting is NOT required in C (but often used for clarity)',
+                            'size_in_bytes is usually calculated using sizeof()'
+                        ]
+                    }
+                },
+                {
+                    type: 'malloc-example',
+                    title: 'malloc() Example',
+                    mainExample: {
+                        code: 'int *ptr = (int *)malloc(sizeof(int) * 5);',
+                        explanation: 'This allocates memory for 5 integers'
+                    },
+                    comparison: {
+                        dynamic: 'int *ptr = (int *)malloc(sizeof(int) * 5);',
+                        static: 'int arr[5];',
+                        note: 'These are almost identical in usage!'
+                    },
+                    usage: [
+                        'Elements can be accessed using ptr[index]',
+                        'Array indexing works the same way',
+                        'ptr[0], ptr[1], ptr[2], ptr[3], ptr[4]'
+                    ]
+                },
+                {
+                    type: 'null-check',
+                    title: 'Checking for Allocation Failure',
+                    warning: 'If memory allocation fails, malloc() returns NULL',
+                    importance: 'Always check before using the pointer!',
+                    code: [
+                        'int *ptr = (int *)malloc(sizeof(int) * 5);',
+                        '',
+                        'if (ptr == NULL) {',
+                        '    printf("Allocation Failed");',
+                        '    exit(0);',
+                        '}',
+                        '',
+                        '// Safe to use ptr now'
+                    ]
+                },
+                {
+                    type: 'code-example',
+                    title: 'Complete Example Using malloc()',
+                    code: [
+                        '#include <stdio.h>',
+                        '#include <stdlib.h>',
+                        '',
+                        'int main() {',
+                        '    int *ptr = (int *)malloc(sizeof(int) * 5);',
+                        '',
+                        '    // Check if allocation failed',
+                        '    if (ptr == NULL) {',
+                        '        printf("Allocation Failed");',
+                        '        exit(0);',
+                        '    }',
+                        '',
+                        '    // Populate the array',
+                        '    for (int i = 0; i < 5; i++)',
+                        '        ptr[i] = i + 1;',
+                        '',
+                        '    // Print the array',
+                        '    for (int i = 0; i < 5; i++)',
+                        '        printf("%d ", ptr[i]);',
+                        '',
+                        '    // Free allocated memory',
+                        '    free(ptr);',
+                        '',
+                        '    return 0;',
+                        '}'
+                    ],
+                    output: '1 2 3 4 5',
+                    revealGroups: [[0,1,2,3,23], [4], [5,6,7,8,9,10], [11,12,13,14], [15,16,17,18], [19,20,21,22]]
+                },
+                {
+                    type: 'free-function',
+                    title: 'free() - Releasing Memory',
+                    description: 'After using dynamically allocated memory, it must be released',
+                    syntax: 'free(pointer_name);',
+                    reasons: [
+                        { icon: '🚫', title: 'Prevents memory leaks', desc: 'Avoids accumulation of unused memory' },
+                        { icon: '🔓', title: 'Releases unused heap memory', desc: 'Makes memory available for other programs' },
+                        { icon: '✅', title: 'Good programming practice', desc: 'Professional and efficient code' }
+                    ],
+                    warning: 'Never access memory after freeing it!'
+                },
+                {
+                    type: 'realloc-intro',
+                    title: 'realloc() - Resizing Memory',
+                    purpose: [
+                        'realloc() is used to resize an existing memory block',
+                        'Can increase or decrease memory size',
+                        'Preserves existing data (up to the smaller size)',
+                        'May move memory to a new location'
+                    ],
+                    syntax: {
+                        code: 'data_type *new_ptr = (data_type *)realloc(old_pointer, new_size * sizeof(data_type));',
+                        note: 'Always assign the result to a pointer and check for NULL'
+                    }
+                },
+                {
+                    type: 'realloc-visual',
+                    title: 'How realloc() Works',
+                    description: 'Visual representation of memory reallocation'
+                },
+                {
+                    type: 'code-example',
+                    title: 'Example Using realloc()',
+                    code: [
+                        '#include <stdio.h>',
+                        '#include <stdlib.h>',
+                        '',
+                        'int main() {',
+                        '    // Initially allocate memory for 5 integers',
+                        '    int *ptr = (int *)malloc(5 * sizeof(int));',
+                        '',
+                        '    // Resize memory to hold 10 integers',
+                        '    ptr = (int *)realloc(ptr, 10 * sizeof(int));',
+                        '',
+                        '    // Check for failure',
+                        '    if (ptr == NULL) {',
+                        '        printf("Memory Reallocation Failed");',
+                        '        exit(0);',
+                        '    }',
+                        '',
+                        '    // Use the resized memory',
+                        '    // ...',
+                        '',
+                        '    free(ptr);',
+                        '    return 0;',
+                        '}'
+                    ],
+                    revealGroups: [[0,1,2,3,21], [4,5], [6,7,8], [9,10,11,12,13,14], [15,16,17], [18,19,20]],
+                    note: 'After realloc(), the old pointer may become invalid if memory moved!'
+                },
+                {
+                    type: 'summary-table',
+                    title: 'Dynamic Memory Functions Summary',
+                    functions: [
+                        { name: 'malloc()', purpose: 'Allocate memory', returns: 'Pointer to allocated memory', notes: 'Memory is uninitialized' },
+                        { name: 'realloc()', purpose: 'Resize allocated memory', returns: 'Pointer to resized memory', notes: 'May move data to new location' },
+                        { name: 'free()', purpose: 'Release memory', returns: 'void (nothing)', notes: 'Must be called to prevent leaks' },
+                        { name: 'Pointer', purpose: 'Stores address of allocated memory', returns: 'N/A', notes: 'Essential for dynamic memory' }
+                    ]
+                },
+                {
+                    type: 'common-mistakes',
+                    title: 'Common Mistakes to Avoid',
+                    mistakes: [
+                        { icon: '❌', mistake: 'Using memory without checking NULL', consequence: 'Program crash / Segmentation fault' },
+                        { icon: '❌', mistake: 'Forgetting to call free()', consequence: 'Memory leaks' },
+                        { icon: '❌', mistake: 'Accessing memory after freeing it', consequence: 'Undefined behavior / Crash' },
+                        { icon: '❌', mistake: 'Using incorrect size in malloc() or realloc()', consequence: 'Buffer overflow / Data corruption' },
+                        { icon: '❌', mistake: 'Not reassigning realloc() result', consequence: 'Lost pointer to allocated memory' }
+                    ]
+                },
+                {
+                    type: 'practice',
+                    title: 'Practice Problems',
+                    problems: [
+                        {
+                            level: 'Basic',
+                            title: 'Dynamic Sum Calculator',
+                            desc: 'Write a program to dynamically allocate memory for n integers, take input from the user, and print the sum.'
+                        },
+                        {
+                            level: 'Intermediate',
+                            title: 'Even Numbers Storage',
+                            desc: 'Dynamically allocate memory for 10 integers and store only even numbers entered by the user.'
+                        },
+                        {
+                            level: 'Advanced',
+                            title: 'Dynamic Array with realloc()',
+                            desc: 'Write a program that: (1) Initially allocates memory for 3 integers (2) Takes input from user (3) If user wants to enter more numbers, resize using realloc() (4) Display all entered numbers'
+                        }
+                    ]
+                },
+                {
+                    type: 'best-practices',
+                    title: 'Best Practices Checklist',
+                    practices: [
+                        'Always check if malloc() or realloc() returns NULL',
+                        'Always call free() for every malloc() or realloc()',
+                        'Set pointer to NULL after freeing: ptr = NULL',
+                        'Never free the same memory twice',
+                        'Calculate size using sizeof() for portability',
+                        'Use realloc() instead of manual copy when resizing',
+                        'Keep track of allocated memory size'
+                    ]
+                },
+                {
+                    type: 'thankyou'
+                }
+            ];
+
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === 'b' || e.key === 'B') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        const newRevealed = { ...revealedSteps };
+                        
+                        if (slide.type === 'concept' || slide.type === 'best-practices') {
+                            for (let i = 0; i < (slide.points || slide.practices).length; i++) {
+                                newRevealed[`${currentSlide}-${i}`] = true;
+                            }
+                        } else if (slide.type === 'code-example') {
+                            for (let i = 0; i < slide.revealGroups.length; i++) {
+                                newRevealed[`${currentSlide}-${i}`] = true;
+                            }
+                        } else if (slide.type === 'problem-statement') {
+                            for (let i = 0; i < slide.issues.length; i++) {
+                                newRevealed[`${currentSlide}-${i}`] = true;
+                            }
+                        }
+                        
+                        setRevealedSteps(newRevealed);
+                    } else if (e.key === 'Tab') {
+                        e.preventDefault();
+                        if (currentSlide < slides.length - 1) {
+                            setCurrentSlide(prev => prev + 1);
+                            setRevealedSteps({});
+                        }
+                    } else if (e.key === 'ArrowRight') {
+                        setCurrentSlide(prev => Math.min(slides.length - 1, prev + 1));
+                        setRevealedSteps({});
+                    } else if (e.key === 'ArrowLeft') {
+                        setCurrentSlide(prev => Math.max(0, prev - 1));
+                        setRevealedSteps({});
+                    } else if (e.key === 'ArrowDown' || e.key === ' ') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        
+                        if (slide.type === 'title' || slide.type === 'thankyou' || slide.type === 'solution' || 
+                            slide.type === 'memory-visual' || slide.type === 'malloc-intro' || slide.type === 'malloc-example' ||
+                            slide.type === 'null-check' || slide.type === 'free-function' || slide.type === 'realloc-intro' ||
+                            slide.type === 'realloc-visual' || slide.type === 'summary-table' || 
+                            slide.type === 'common-mistakes' || slide.type === 'practice') {
+                            if (currentSlide < slides.length - 1) {
+                                setCurrentSlide(prev => prev + 1);
+                                setRevealedSteps({});
+                            }
+                            return;
+                        }
+                        
+                        let totalSteps = 0;
+                        if (slide.type === 'concept' || slide.type === 'best-practices') totalSteps = (slide.points || slide.practices).length;
+                        else if (slide.type === 'code-example') totalSteps = slide.revealGroups.length;
+                        else if (slide.type === 'problem-statement') totalSteps = slide.issues.length;
+                        
+                        let allRevealed = true;
+                        for (let i = 0; i < totalSteps; i++) {
+                            if (!revealedSteps[`${currentSlide}-${i}`]) {
+                                allRevealed = false;
+                                break;
+                            }
+                        }
+                        
+                        if (allRevealed && totalSteps > 0) {
+                            if (currentSlide < slides.length - 1) {
+                                setCurrentSlide(prev => prev + 1);
+                                setRevealedSteps({});
+                            }
+                        } else {
+                            for (let i = 0; i < totalSteps; i++) {
+                                if (!revealedSteps[`${currentSlide}-${i}`]) {
+                                    setRevealedSteps(prev => ({ ...prev, [`${currentSlide}-${i}`]: true }));
+                                    break;
+                                }
+                            }
+                        }
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        const slide = slides[currentSlide];
+                        
+                        if (slide.type === 'title' || slide.type === 'thankyou' || slide.type === 'solution' ||
+                            slide.type === 'memory-visual' || slide.type === 'malloc-intro' || slide.type === 'malloc-example' ||
+                            slide.type === 'null-check' || slide.type === 'free-function' || slide.type === 'realloc-intro' ||
+                            slide.type === 'realloc-visual' || slide.type === 'summary-table' ||
+                            slide.type === 'common-mistakes' || slide.type === 'practice') {
+                            if (currentSlide > 0) {
+                                setCurrentSlide(prev => prev - 1);
+                                setRevealedSteps({});
+                            }
+                            return;
+                        }
+                        
+                        let totalSteps = 0;
+                        if (slide.type === 'concept' || slide.type === 'best-practices') totalSteps = (slide.points || slide.practices).length;
+                        else if (slide.type === 'code-example') totalSteps = slide.revealGroups.length;
+                        else if (slide.type === 'problem-statement') totalSteps = slide.issues.length;
+                        
+                        let anyRevealed = false;
+                        for (let i = 0; i < totalSteps; i++) {
+                            if (revealedSteps[`${currentSlide}-${i}`]) {
+                                anyRevealed = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!anyRevealed && currentSlide > 0) {
+                            setCurrentSlide(prev => prev - 1);
+                            setRevealedSteps({});
+                            return;
+                        }
+                        
+                        for (let i = totalSteps - 1; i >= 0; i--) {
+                            if (revealedSteps[`${currentSlide}-${i}`]) {
+                                const newRevealed = { ...revealedSteps };
+                                delete newRevealed[`${currentSlide}-${i}`];
+                                setRevealedSteps(newRevealed);
+                                break;
+                            }
+                        }
+                    }
+                };
+
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [currentSlide, revealedSteps, slides]);
+
+            const toggleStep = (slideIdx, stepIdx) => {
+                const key = `${slideIdx}-${stepIdx}`;
+                setRevealedSteps(prev => ({ ...prev, [key]: !prev[key] }));
+            };
+
+            const slide = slides[currentSlide];
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex flex-col items-center justify-center p-4">
+                    <div className="bg-white rounded-xl shadow-2xl h-full flex flex-col" style={{ width: '1280px', height: '720px', maxWidth: '95vw', maxHeight: '95vh' }}>
+                        
+                        <div className="flex-1 overflow-auto p-8">
+                            {slide.type === 'title' && (
+                                <div className="h-full flex flex-col items-center justify-center text-center space-y-6">
+                                    <div className="text-purple-600 font-bold text-2xl">{slide.content.courseCode}</div>
+                                    <div className="text-3xl font-semibold text-gray-700">{slide.content.courseTitle}</div>
+                                    <div className="text-6xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mt-8">
+                                        {slide.content.topic}
+                                    </div>
+                                    <div className="text-5xl mt-6">🧠</div>
+                                    <div className="mt-12 text-xl text-gray-600">Prepared by: {slide.content.faculty}</div>
+                                </div>
+                            )}
+
+                            {slide.type === 'thankyou' && (
+                                <div className="flex flex-col items-center justify-center h-full text-center">
+                                    <h1 className="text-9xl font-extrabold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                                        Thank You
+                                    </h1>
+                                    <p className="text-3xl text-gray-600 mt-8">Allocate Wisely, Code Efficiently! 🚀</p>
+                                </div>
+                            )}
+
+                            {slide.type === 'problem-statement' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-red-900 mb-6 border-b-4 border-red-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 flex flex-col justify-center space-y-6">
+                                        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-6 border-4 border-yellow-400">
+                                            <h3 className="text-2xl font-bold text-yellow-900 mb-4">{slide.problem.title}</h3>
+                                            <p className="text-xl text-gray-700 mb-3">{slide.problem.scenario}</p>
+                                            <div className="bg-white rounded-lg p-4 font-mono text-2xl font-bold text-purple-700 border-2 border-yellow-300">
+                                                {slide.problem.code}
+                                            </div>
+                                            <p className="text-2xl text-red-600 font-bold mt-4">❓ {slide.problem.question}</p>
+                                        </div>
+                                        
+                                        <div className="space-y-3">
+                                            {slide.issues.map((issue, idx) => (
+                                                <div key={idx} className="flex items-start space-x-4">
+                                                    <button
+                                                        onClick={() => toggleStep(currentSlide, idx)}
+                                                        className="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition-all"
+                                                    >
+                                                        {revealedSteps[`${currentSlide}-${idx}`] ? <Eye /> : <EyeOff />}
+                                                    </button>
+                                                    <div className={`text-xl transition-all duration-500 ${
+                                                        revealedSteps[`${currentSlide}-${idx}`]
+                                                            ? 'opacity-100 transform translate-x-0'
+                                                            : 'opacity-0 transform -translate-x-4'
+                                                    }`}>
+                                                        <span className="text-red-600 font-bold mr-3">✗</span>
+                                                        {issue}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'solution' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-green-900 mb-6 border-b-4 border-green-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 flex flex-col justify-center space-y-6">
+                                        {slide.benefits.map((benefit, idx) => (
+                                            <div key={idx} className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border-4 border-green-400 animate-slide-in">
+                                                <div className="flex items-start space-x-4">
+                                                    <div className="text-5xl">{benefit.icon}</div>
+                                                    <div className="flex-1">
+                                                        <h3 className="text-2xl font-bold text-green-800 mb-2">{benefit.title}</h3>
+                                                        <p className="text-xl text-gray-700">{benefit.desc}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'memory-visual' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-purple-900 mb-4 border-b-4 border-purple-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <p className="text-lg text-gray-600 mb-6 italic">{slide.description}</p>
+                                    <div className="flex-1 flex items-center justify-center">
+                                        <div className="grid grid-cols-2 gap-8 w-full max-w-5xl">
+                                            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-8 border-4 border-purple-400">
+                                                <h3 className="text-3xl font-bold text-purple-800 mb-6 text-center">Heap Memory</h3>
+                                                <div className="space-y-3">
+                                                    <div className="bg-purple-200 rounded-lg p-4 border-2 border-purple-500">
+                                                        <div className="font-mono font-semibold">malloc() allocations</div>
+                                                    </div>
+                                                    <div className="bg-purple-200 rounded-lg p-4 border-2 border-purple-500">
+                                                        <div className="font-mono font-semibold">Dynamic arrays</div>
+                                                    </div>
+                                                    <div className="bg-purple-200 rounded-lg p-4 border-2 border-purple-500">
+                                                        <div className="font-mono font-semibold">Resizable memory</div>
+                                                    </div>
+                                                </div>
+                                                <div className="mt-6 bg-white rounded-lg p-4 border-2 border-purple-300">
+                                                    <div className="text-sm font-semibold text-gray-700 mb-2">Characteristics:</div>
+                                                    <ul className="text-sm text-gray-600 space-y-1">
+                                                        <li>• Dynamic size</li>
+                                                        <li>• Manual management</li>
+                                                        <li>• Slower than stack</li>
+                                                        <li>• Much larger space</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-8 border-4 border-blue-400">
+                                                <h3 className="text-3xl font-bold text-blue-800 mb-6 text-center">Stack Memory</h3>
+                                                <div className="space-y-3">
+                                                    <div className="bg-blue-200 rounded-lg p-4 border-2 border-blue-500">
+                                                        <div className="font-mono font-semibold">Local Variables</div>
+                                                    </div>
+                                                    <div className="bg-blue-200 rounded-lg p-4 border-2 border-blue-500">
+                                                        <div className="font-mono font-semibold">Function Parameters</div>
+                                                    </div>
+                                                    <div className="bg-blue-200 rounded-lg p-4 border-2 border-blue-500">
+                                                        <div className="font-mono font-semibold">Return Addresses</div>
+                                                    </div>
+                                                </div>
+                                                <div className="mt-6 bg-white rounded-lg p-4 border-2 border-blue-300">
+                                                    <div className="text-sm font-semibold text-gray-700 mb-2">Characteristics:</div>
+                                                    <ul className="text-sm text-gray-600 space-y-1">
+                                                        <li>• Fixed size</li>
+                                                        <li>• Automatic management</li>
+                                                        <li>• Fast access</li>
+                                                        <li>• Limited space</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'concept' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-purple-900 mb-6 border-b-4 border-purple-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 flex flex-col justify-center space-y-5">
+                                        {slide.points.map((point, idx) => (
+                                            <div key={idx} className="flex items-start space-x-4">
+                                                <button
+                                                    onClick={() => toggleStep(currentSlide, idx)}
+                                                    className="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-purple-500 hover:bg-purple-600 text-white flex items-center justify-center transition-all"
+                                                >
+                                                    {revealedSteps[`${currentSlide}-${idx}`] ? <Eye /> : <EyeOff />}
+                                                </button>
+                                                <div className={`text-xl transition-all duration-500 ${
+                                                    revealedSteps[`${currentSlide}-${idx}`]
+                                                        ? 'opacity-100 transform translate-x-0'
+                                                        : 'opacity-0 transform -translate-x-4'
+                                                }`}>
+                                                    <span className="text-purple-600 font-bold mr-3">▸</span>
+                                                    {point}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'malloc-intro' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-indigo-900 mb-4 border-b-4 border-indigo-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 overflow-auto space-y-6">
+                                        <div className="bg-pink-50 rounded-xl p-5 border-4 border-pink-400">
+                                            <h3 className="text-2xl font-bold text-pink-800 mb-3">Required Header File:</h3>
+                                            <div className="font-mono text-2xl font-bold text-purple-700 bg-white p-4 rounded-lg border-2 border-pink-300">
+                                                {slide.headerFile}
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="bg-blue-50 rounded-xl p-5 border-4 border-blue-400">
+                                            <h3 className="text-2xl font-bold text-blue-800 mb-3">Purpose of malloc():</h3>
+                                            <ul className="space-y-2">
+                                                {slide.purpose.map((item, idx) => (
+                                                    <li key={idx} className="text-lg text-gray-700 flex items-start">
+                                                        <span className="text-blue-600 mr-3 text-xl">•</span>
+                                                        <span>{item}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                        
+                                        <div className="bg-purple-50 rounded-xl p-5 border-4 border-purple-400">
+                                            <h3 className="text-2xl font-bold text-purple-800 mb-3">Syntax:</h3>
+                                            <div className="font-mono text-lg font-bold text-gray-800 bg-white p-4 rounded-lg border-2 border-purple-300 mb-3">
+                                                {slide.syntax.code}
+                                            </div>
+                                            <div className="space-y-2">
+                                                {slide.syntax.notes.map((note, idx) => (
+                                                    <div key={idx} className="bg-white p-3 rounded-lg border-l-4 border-yellow-500">
+                                                        <span className="text-yellow-600 font-bold">📌 </span>
+                                                        <span className="text-gray-700">{note}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'malloc-example' && (
+                                <div className="h-full flex flex-col items-center justify-center">
+                                    <h2 className="text-4xl font-bold text-indigo-900 mb-6 border-b-4 border-indigo-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="max-w-5xl w-full space-y-6">
+                                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border-4 border-green-400">
+                                            <div className="font-mono text-2xl font-bold text-gray-800 bg-white p-4 rounded-lg border-2 border-green-300 mb-3">
+                                                {slide.mainExample.code}
+                                            </div>
+                                            <p className="text-xl text-gray-700 font-semibold">{slide.mainExample.explanation}</p>
+                                        </div>
+                                        
+                                        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-6 border-4 border-yellow-400">
+                                            <h3 className="text-2xl font-bold text-yellow-900 mb-4">Almost Identical Usage:</h3>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="bg-white rounded-lg p-4 border-2 border-purple-300">
+                                                    <div className="text-lg font-bold text-purple-700 mb-2">Dynamic:</div>
+                                                    <div className="font-mono text-base text-gray-800">{slide.comparison.dynamic}</div>
+                                                </div>
+                                                <div className="bg-white rounded-lg p-4 border-2 border-blue-300">
+                                                    <div className="text-lg font-bold text-blue-700 mb-2">Static:</div>
+                                                    <div className="font-mono text-base text-gray-800">{slide.comparison.static}</div>
+                                                </div>
+                                            </div>
+                                            <p className="text-lg text-gray-700 font-semibold mt-4 text-center">{slide.comparison.note}</p>
+                                        </div>
+                                        
+                                        <div className="bg-blue-50 rounded-lg p-5 border-2 border-blue-300">
+                                            <h3 className="text-xl font-bold text-blue-800 mb-3">Usage:</h3>
+                                            <ul className="space-y-2">
+                                                {slide.usage.map((item, idx) => (
+                                                    <li key={idx} className="text-lg text-gray-700">
+                                                        <span className="text-blue-600 mr-2">•</span>{item}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'null-check' && (
+                                <div className="h-full flex flex-col items-center justify-center">
+                                    <h2 className="text-4xl font-bold text-red-900 mb-6 border-b-4 border-red-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="max-w-4xl w-full space-y-6">
+                                        <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-6 border-4 border-red-400">
+                                            <div className="flex items-center space-x-4 mb-4">
+                                                <span className="text-5xl">⚠️</span>
+                                                <p className="text-2xl font-bold text-red-800">{slide.warning}</p>
+                                            </div>
+                                            <p className="text-2xl font-bold text-green-700 mt-4">✓ {slide.importance}</p>
+                                        </div>
+                                        
+                                        <div className="bg-gray-900 rounded-lg p-6">
+                                            <div className="font-mono text-lg">
+                                                {slide.code.map((line, idx) => (
+                                                    <div key={idx} className="code-line">
+                                                        <span className="text-gray-500 select-none mr-4 inline-block w-8 text-right text-sm">
+                                                            {idx + 1}
+                                                        </span>
+                                                        <span className={`${
+                                                            line.includes('//') ? 'text-green-400' :
+                                                            line.includes('int') || line.includes('malloc') ? 'text-blue-400' :
+                                                            line.includes('if') ? 'text-purple-400' :
+                                                            line.includes('printf') || line.includes('exit') ? 'text-yellow-300' :
+                                                            line.includes('NULL') ? 'text-red-400' :
+                                                            'text-gray-100'
+                                                        }`}>
+                                                            {line || '\u00A0'}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'code-example' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-3xl font-bold text-indigo-900 mb-3 border-b-4 border-indigo-500 pb-2">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 grid grid-cols-4 gap-4">
+                                        <div className="col-span-3 flex flex-col">
+                                            <div className="flex-1 bg-gray-900 rounded-lg p-4 overflow-auto">
+                                                <div className="font-mono text-sm">
+                                                    {slide.code.map((line, lineIdx) => {
+                                                        const groupIdx = slide.revealGroups.findIndex(group => group.includes(lineIdx));
+                                                        const isRevealed = groupIdx !== -1 && revealedSteps[`${currentSlide}-${groupIdx}`];
+                                                        
+                                                        return (
+                                                            <div key={lineIdx} className={`code-line transition-all duration-300 ${
+                                                                isRevealed ? 'opacity-100' : 'opacity-20'
+                                                            }`}>
+                                                                <span className="text-gray-500 select-none mr-4 inline-block w-8 text-right text-xs">
+                                                                    {lineIdx + 1}
+                                                                </span>
+                                                                <span className={`${
+                                                                    line.includes('//') ? 'text-green-400' :
+                                                                    line.includes('#include') ? 'text-pink-400' :
+                                                                    line.includes('int') || line.includes('main') ? 'text-blue-400' :
+                                                                    line.includes('printf') ? 'text-yellow-300' :
+                                                                    line.includes('if') || line.includes('for') ? 'text-purple-400' :
+                                                                    line.includes('malloc') || line.includes('free') || line.includes('realloc') ? 'text-orange-400' :
+                                                                    line.includes('exit') ? 'text-red-400' :
+                                                                    'text-gray-100'
+                                                                }`}>
+                                                                    {line || '\u00A0'}
+                                                                </span>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                                <div className="mt-3 flex flex-wrap gap-2">
+                                                    {slide.revealGroups.map((group, idx) => (
+                                                        <button
+                                                            key={idx}
+                                                            onClick={() => toggleStep(currentSlide, idx)}
+                                                            className={`px-2 py-1 rounded text-xs font-semibold transition-all ${
+                                                                revealedSteps[`${currentSlide}-${idx}`]
+                                                                    ? 'bg-green-500 text-white'
+                                                                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                                            }`}
+                                                        >
+                                                            Step {idx + 1}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col space-y-3">
+                                            <div className="bg-green-900 text-green-100 rounded-lg p-4">
+                                                <div className="font-semibold text-lg mb-2">Output:</div>
+                                                <div className="font-mono text-sm">{slide.output}</div>
+                                            </div>
+                                            {slide.note && (
+                                                <div className="bg-yellow-50 rounded-lg p-4 border-2 border-yellow-400">
+                                                    <div className="text-xs text-gray-700">
+                                                        <span className="font-bold text-yellow-700">⚠️ Note:</span> {slide.note}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'free-function' && (
+                                <div className="h-full flex flex-col items-center justify-center">
+                                    <h2 className="text-4xl font-bold text-purple-900 mb-6 border-b-4 border-purple-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="max-w-5xl w-full space-y-6">
+                                        <div className="bg-purple-50 rounded-xl p-6 border-4 border-purple-400">
+                                            <p className="text-xl text-gray-700 mb-4">{slide.description}</p>
+                                            <div className="font-mono text-3xl font-bold text-purple-700 bg-white p-4 rounded-lg border-2 border-purple-300 text-center">
+                                                {slide.syntax}
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-3 gap-4">
+                                            {slide.reasons.map((reason, idx) => (
+                                                <div key={idx} className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-5 border-4 border-blue-400">
+                                                    <div className="text-4xl mb-3 text-center">{reason.icon}</div>
+                                                    <h3 className="text-lg font-bold text-blue-800 mb-2 text-center">{reason.title}</h3>
+                                                    <p className="text-sm text-gray-700 text-center">{reason.desc}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        
+                                        <div className="bg-red-50 border-l-4 border-red-500 p-5 rounded">
+                                            <p className="text-xl font-bold text-red-700">
+                                                ⚠️ Warning: {slide.warning}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'realloc-intro' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-indigo-900 mb-6 border-b-4 border-indigo-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 flex flex-col justify-center space-y-6">
+                                        <div className="bg-blue-50 rounded-xl p-6 border-4 border-blue-400">
+                                            <h3 className="text-2xl font-bold text-blue-800 mb-4">Purpose of realloc():</h3>
+                                            <ul className="space-y-3">
+                                                {slide.purpose.map((item, idx) => (
+                                                    <li key={idx} className="text-xl text-gray-700 flex items-start">
+                                                        <span className="text-blue-600 mr-3 text-2xl">•</span>
+                                                        <span>{item}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                        
+                                        <div className="bg-purple-50 rounded-xl p-6 border-4 border-purple-400">
+                                            <h3 className="text-2xl font-bold text-purple-800 mb-4">Syntax:</h3>
+                                            <div className="font-mono text-lg font-bold text-gray-800 bg-white p-4 rounded-lg border-2 border-purple-300 mb-3">
+                                                {slide.syntax.code}
+                                            </div>
+                                            <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
+                                                <span className="text-yellow-600 font-bold">📌 </span>
+                                                <span className="text-gray-700 font-semibold">{slide.syntax.note}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'realloc-visual' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-indigo-900 mb-4 border-b-4 border-indigo-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <p className="text-lg text-gray-600 mb-6 italic">{slide.description}</p>
+                                    <div className="flex-1 flex flex-col items-center justify-center space-y-8">
+                                        <div className="w-full max-w-5xl">
+                                            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border-4 border-blue-400">
+                                                <h3 className="text-2xl font-bold text-blue-800 mb-4 text-center">Initial Allocation (5 integers)</h3>
+                                                <div className="flex justify-center space-x-3">
+                                                    {[1, 2, 3, 4, 5].map((val, idx) => (
+                                                        <div key={idx} className="memory-block bg-blue-500 text-white rounded-lg p-4 text-center">
+                                                            <div className="text-2xl font-bold">{val}</div>
+                                                            <div className="text-xs mt-1 font-mono">[{idx}]</div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div className="text-center mt-3 font-mono text-sm text-gray-600">
+                                                    ptr = malloc(5 * sizeof(int))
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="text-4xl text-purple-600">↓ realloc() ↓</div>
+                                        
+                                        <div className="w-full max-w-5xl">
+                                            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border-4 border-purple-400">
+                                                <h3 className="text-2xl font-bold text-purple-800 mb-4 text-center">After Reallocation (10 integers)</h3>
+                                                <div className="flex justify-center space-x-2">
+                                                    {[1, 2, 3, 4, 5, '?', '?', '?', '?', '?'].map((val, idx) => (
+                                                        <div key={idx} className={`memory-block rounded-lg p-3 text-center ${
+                                                            idx < 5 ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'
+                                                        }`}>
+                                                            <div className="text-xl font-bold">{val}</div>
+                                                            <div className="text-xs mt-1 font-mono">[{idx}]</div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div className="text-center mt-3 font-mono text-sm text-gray-600">
+                                                    ptr = realloc(ptr, 10 * sizeof(int))
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded max-w-5xl w-full">
+                                            <p className="text-lg font-semibold text-gray-800">
+                                                <span className="text-green-600">✓</span> Original data (1-5) preserved, new space uninitialized
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'summary-table' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-indigo-900 mb-6 border-b-4 border-indigo-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 overflow-auto">
+                                        <table className="w-full">
+                                            <thead>
+                                                <tr className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+                                                    <th className="p-4 text-left text-xl font-bold">Function</th>
+                                                    <th className="p-4 text-left text-xl font-bold">Purpose</th>
+                                                    <th className="p-4 text-left text-xl font-bold">Returns</th>
+                                                    <th className="p-4 text-left text-xl font-bold">Notes</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {slide.functions.map((func, idx) => (
+                                                    <tr key={idx} className={`${
+                                                        idx % 2 === 0 ? 'bg-blue-50' : 'bg-purple-50'
+                                                    } border-b-2 border-gray-200`}>
+                                                        <td className="p-4 font-mono text-xl font-bold text-indigo-700">{func.name}</td>
+                                                        <td className="p-4 text-lg text-gray-700">{func.purpose}</td>
+                                                        <td className="p-4 text-lg text-gray-700">{func.returns}</td>
+                                                        <td className="p-4 text-base text-gray-600 italic">{func.notes}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'common-mistakes' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-red-900 mb-6 border-b-4 border-red-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 overflow-auto space-y-4">
+                                        {slide.mistakes.map((item, idx) => (
+                                            <div key={idx} className="bg-red-50 rounded-xl p-5 border-4 border-red-300">
+                                                <div className="flex items-start space-x-4">
+                                                    <span className="text-4xl flex-shrink-0">{item.icon}</span>
+                                                    <div className="flex-1">
+                                                        <h3 className="text-xl font-bold text-red-800 mb-2">{item.mistake}</h3>
+                                                        <div className="bg-white rounded-lg p-3 border-l-4 border-orange-500">
+                                                            <span className="text-orange-600 font-bold">Consequence: </span>
+                                                            <span className="text-gray-700">{item.consequence}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'practice' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-purple-900 mb-5 border-b-4 border-purple-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 overflow-auto space-y-4">
+                                        {slide.problems.map((problem, idx) => (
+                                            <div key={idx} className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border-4 border-purple-300 shadow-lg hover:shadow-xl transition-shadow">
+                                                <div className="flex items-start space-x-4">
+                                                    <div className="flex-shrink-0">
+                                                        <div className="w-16 h-16 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-2xl">
+                                                            {idx + 1}
+                                                        </div>
+                                                        <div className={`mt-2 text-center text-xs font-bold px-2 py-1 rounded ${
+                                                            problem.level === 'Basic' ? 'bg-green-200 text-green-800' :
+                                                            problem.level === 'Intermediate' ? 'bg-yellow-200 text-yellow-800' :
+                                                            'bg-red-200 text-red-800'
+                                                        }`}>
+                                                            {problem.level}
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h3 className="text-xl font-bold text-purple-800 mb-2">{problem.title}</h3>
+                                                        <p className="text-lg text-gray-700">{problem.desc}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {slide.type === 'best-practices' && (
+                                <div className="h-full flex flex-col">
+                                    <h2 className="text-4xl font-bold text-blue-900 mb-6 border-b-4 border-blue-500 pb-3">
+                                        {slide.title}
+                                    </h2>
+                                    <div className="flex-1 overflow-auto p-6">
+                                        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-8 border-4 border-blue-400">
+                                            <ul className="list-disc list-inside space-y-3 text-lg text-gray-700">
+                                                {slide.practices.map((p, idx) => {
+                                                    const key = `${currentSlide}-${idx}`;
+                                                    const revealed = !!revealedSteps[key];
+                                                    return (
+                                                        <li
+                                                            key={idx}
+                                                            onClick={() => toggleStep(currentSlide, idx)}
+                                                            className={`transition-opacity duration-200 ${revealed ? 'opacity-100' : 'opacity-60 cursor-pointer'}`}
+                                                        >
+                                                            {p}
+                                                        </li>
+                                                    );
+                                                })}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                        </div> {/* end .flex-1 overflow-auto p-8 */}
+
+                        
+
+                    </div> {/* end .bg-white rounded-xl shadow-2xl */}
+                </div> 
+
+            ); // end return
+        }; // end DynamicMemoryPresentation
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<DynamicMemoryPresentation />);
+    </script>
+</body>
+</html>
