@@ -6,7 +6,15 @@
     <title>Control Statements in C - EEE 103 L4</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+    <script>
+        // Force the classic JSX runtime so JSX compiles to React.createElement
+        // (which uses the global React loaded above) instead of emitting an
+        // `import ... from "react/jsx-runtime"` that a classic <script> can't run.
+        Babel.registerPreset('react-classic', {
+            presets: [[Babel.availablePresets['react'], { runtime: 'classic' }]],
+        });
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -23,7 +31,7 @@
 <body>
     <div id="root"></div>
 
-    <script type="text/babel">
+    <script type="text/babel" data-presets="react-classic">
         const { useState, useEffect } = React;
 
         const Eye = () => (
